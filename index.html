@@ -234,16 +234,16 @@ section{padding:80px 0; position:relative;}
 .equipe-photo-ring{
   width:148px; height:148px; border-radius:50%; padding:2.5px;
   background:conic-gradient(from 200deg, var(--brass), var(--belt-red) 35%, var(--brass) 70%, var(--belt-red) 100%);
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  flex-shrink:0; overflow:hidden;
   box-shadow:0 12px 24px -10px rgba(28,43,69,0.35);
   transition:box-shadow .25s ease;
 }
 .equipe-card:hover .equipe-photo-ring{box-shadow:0 16px 30px -8px rgba(168,60,52,0.4);}
 .equipe-avatar, .equipe-avatar-img{
-  width:100%; height:100%; border-radius:50%;
+  width:100%; height:100%; border-radius:50%; display:block;
 }
 .equipe-avatar{background:var(--indigo-deep); color:var(--rice); font-family:'Shippori Mincho',serif; font-weight:700; font-size:2.1rem; display:flex; align-items:center; justify-content:center;}
-.equipe-avatar-img{object-fit:cover; display:block;}
+.equipe-avatar-img{object-fit:cover; object-position:center;}
 .equipe-card-info{margin-top:16px;}
 .equipe-card .name{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:1.02rem;}
 .equipe-card .role{font-size:0.8rem; color:var(--brass); margin-top:4px; letter-spacing:0.02em;}
