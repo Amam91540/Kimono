@@ -158,9 +158,9 @@ section{padding:80px 0; position:relative;}
 /* ---------- DISCIPLINES ---------- */
 .disciplines{background:var(--rice-soft);}
 .disc-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:1px; background:var(--line); border:1px solid var(--line); position:relative; z-index:1;}
-.disc-card{background:var(--rice-soft); padding:34px 20px; text-align:center; transition:background .2s ease;}
-@media (max-width:900px){.disc-grid{grid-template-columns:repeat(2, 1fr);}}
-@media (max-width:520px){.disc-grid{grid-template-columns:1fr;}}
+.disc-card{background:var(--rice-soft); padding:34px 16px; text-align:center; transition:background .2s ease;}
+@media (max-width:700px){.disc-grid{grid-template-columns:repeat(2, 1fr);}}
+@media (max-width:480px){.disc-grid{grid-template-columns:1fr;}}
 .disc-card:hover{background:var(--rice);}
 .disc-icon{width:38px; height:38px; margin-bottom:18px; color:var(--brass);}
 .disc-num{font-family:'Shippori Mincho',serif; font-size:0.78rem; color:var(--brass); font-weight:700; margin-bottom:6px; display:block;}
@@ -221,16 +221,16 @@ section{padding:80px 0; position:relative;}
 .equipe{background:var(--rice-soft); position:relative;}
 .equipe-dept{position:relative; z-index:1; margin-bottom:52px;}
 .equipe-dept:last-of-type{margin-bottom:0;}
-.equipe-dept-head{display:flex; align-items:baseline; gap:14px; margin-bottom:26px;}
-.equipe-dept h3{font-family:'Shippori Mincho',serif; color:var(--indigo-deep); font-size:1.3rem; font-weight:700; white-space:nowrap;}
-.equipe-dept-rule{flex:1; height:1px; background:linear-gradient(to right, var(--brass), transparent);}
+.equipe-dept-head{display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:30px;}
+.equipe-dept h3{font-family:'Shippori Mincho',serif; color:var(--indigo-deep); font-size:1.3rem; font-weight:700;}
+.equipe-dept-rule{width:64px; height:2px; margin-top:10px; background:linear-gradient(to right, transparent, var(--brass), var(--belt-red), var(--brass), transparent);}
 .equipe-grid{display:flex; flex-wrap:wrap; justify-content:center; gap:32px 28px;}
 .equipe-grid.cols-3{display:grid; grid-template-columns:repeat(3, 160px); justify-content:center;}
 @media (max-width:560px){.equipe-grid.cols-3{grid-template-columns:repeat(2, 160px);}}
 .equipe-card{width:160px; background:transparent; display:flex; flex-direction:column; align-items:center; text-align:center; transition:transform .25s ease;}
 .equipe-card:hover{transform:translateY(-4px);}
 .equipe-photo-ring{
-  width:148px; height:148px; border-radius:50%; padding:2.5px;
+  width:128px; height:128px; border-radius:50%; padding:3px;
   background:conic-gradient(from 200deg, var(--brass), var(--belt-red) 35%, var(--brass) 70%, var(--belt-red) 100%);
   flex-shrink:0; overflow:hidden;
   box-shadow:0 12px 24px -10px rgba(28,43,69,0.35);
@@ -238,11 +238,11 @@ section{padding:80px 0; position:relative;}
 }
 .equipe-card:hover .equipe-photo-ring{box-shadow:0 16px 30px -8px rgba(168,60,52,0.4);}
 .equipe-avatar, .equipe-avatar-img{
-  width:100%; height:100%; border-radius:50%; display:block;
+  width:100%; height:100%; border-radius:50%; display:block; overflow:hidden;
 }
-.equipe-avatar{background:var(--indigo-deep); color:var(--rice); font-family:'Shippori Mincho',serif; font-weight:700; font-size:2.1rem; display:flex; align-items:center; justify-content:center;}
-.equipe-avatar-img{object-fit:cover; object-position:center;}
-.equipe-card-info{margin-top:16px;}
+.equipe-avatar{background:var(--indigo-deep); color:var(--rice); font-family:'Shippori Mincho',serif; font-weight:700; font-size:1.9rem; display:flex; align-items:center; justify-content:center;}
+.equipe-avatar-img{object-fit:cover; object-position:center; transform:scale(1.18);}
+.equipe-card-info{margin-top:14px;}
 .equipe-card .name{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:1.02rem;}
 .equipe-card .role{font-size:0.8rem; color:var(--brass); margin-top:4px; letter-spacing:0.02em;}
 .adm-photo-row{display:flex; align-items:center; gap:10px;}
