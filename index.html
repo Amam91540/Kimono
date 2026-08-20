@@ -1198,6 +1198,16 @@ function placementRank(raw){
   return m ? parseInt(m[1],10) : 9999;
 }
 
+var AGE_CATEGORY_ORDER = ['baby','\u00e9veil','mini-poussin','poussin','pupille','benjamin','minime','cadet','junior','espoir','senior','v\u00e9t\u00e9ran'];
+function categoryRank(cat){
+  if(!cat) return 999;
+  var c = String(cat).toLowerCase();
+  for(var i=0;i<AGE_CATEGORY_ORDER.length;i++){
+    if(c.indexOf(AGE_CATEGORY_ORDER[i]) !== -1) return i;
+  }
+  return 998;
+}
+
 function groupResultsByEvent(results){
   var groups = {};
   var order = [];
@@ -1214,6 +1224,7 @@ function groupResultsByEvent(results){
   });
   order.forEach(function(k){
     var g = groups[k];
+    g.catOrder.sort(function(a,b){ return categoryRank(a) - categoryRank(b); });
     g.catOrder.forEach(function(cat){
       g.byCategory[cat].sort(function(a,b){ return placementRank(a.result) - placementRank(b.result); });
     });
