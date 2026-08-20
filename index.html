@@ -268,10 +268,16 @@ section{padding:80px 0; position:relative;}
 .adm-article-photo-slot .adm-photo-remove{position:absolute; top:2px; right:2px; background:rgba(255,255,255,0.9); border-radius:50%; width:18px; height:18px; font-size:0.62rem; line-height:1; text-decoration:none; display:flex; align-items:center; justify-content:center;}
 .adm-article-photo-empty{border:1.5px dashed var(--brass); display:flex; align-items:center; justify-content:center;}
 .adm-article-photo-empty label{font-size:0.68rem; color:var(--brass); cursor:pointer; font-weight:700; text-align:center;}
-.vie-layout{display:grid; grid-template-columns:2fr 1fr; gap:32px; align-items:start;}
+.vie-layout{display:grid; grid-template-columns:1fr 300px; gap:28px; align-items:start;}
 @media (max-width:860px){.vie-layout{grid-template-columns:1fr;}}
 .vie-main{min-width:0;}
 .vie-side{min-width:0;}
+.article-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; align-content:start;}
+@media (max-width:640px){.article-grid{grid-template-columns:1fr;}}
+.article-grid .article-card{margin-bottom:0;}
+.article-more-wrap{text-align:center; margin-top:22px;}
+.article-more-btn{background:transparent; border:1.5px solid var(--indigo-deep); color:var(--indigo-deep); padding:11px 24px; border-radius:2px; font-weight:700; font-size:0.86rem; cursor:pointer; font-family:inherit;}
+.article-more-btn:hover{background:var(--indigo-deep); color:#fff;}
 
 /* ---------- VIE DU CLUB ---------- */
 .vie{background:var(--rice);}
@@ -343,6 +349,19 @@ footer{background:var(--indigo-ink); color:rgba(239,233,220,0.5); text-align:cen
 .social-icon.small svg{width:15px; height:15px;}
 
 /* ---------- OVERVIEW LINKS (home page) ---------- */
+.next-event-card{
+  background:var(--indigo-deep); color:var(--rice-soft); border-radius:4px; padding:28px 32px;
+  display:flex; align-items:center; flex-wrap:wrap; gap:16px 28px; position:relative; z-index:1;
+  box-shadow:var(--shadow);
+}
+.next-event-label{font-size:0.72rem; text-transform:uppercase; letter-spacing:0.14em; color:#c9a45c; font-weight:700; width:100%;}
+.next-event-date{font-family:'Shippori Mincho',serif; font-weight:700; font-size:1.1rem; color:#c9a45c;}
+.next-event-name{font-family:'Shippori Mincho',serif; font-weight:700; font-size:1.15rem; flex:1; min-width:180px;}
+.next-event-meta{font-size:0.84rem; color:rgba(239,233,220,0.7);}
+.next-event-empty{color:rgba(239,233,220,0.75); font-size:0.92rem;}
+.next-event-link{margin-left:auto; color:#c9a45c; font-weight:700; font-size:0.86rem; white-space:nowrap; position:relative; padding-bottom:2px;}
+.next-event-link::after{content:""; position:absolute; left:0; right:100%; bottom:0; height:1.5px; background:#c9a45c; transition:right .25s ease;}
+.next-event-link:hover::after{right:0;}
 .overview-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:20px; position:relative; z-index:1;}
 .overview-card{background:#fff; border:1px solid var(--line); border-radius:3px; padding:28px; box-shadow:var(--shadow); transition:transform .2s ease;}
 .overview-card:hover{transform:translateY(-3px);}
@@ -486,6 +505,12 @@ body.admin-mode{padding-bottom:64px;}
   </div>
 </section>
 <div class="seigaiha-strip light"></div>
+
+<section>
+  <div class="wrap">
+    <div id="home-next-event"></div>
+  </div>
+</section>
 
 <section>
   <div class="wrap">
@@ -1308,6 +1333,35 @@ async function loadTatamiCalendar(){
     tatamiStatus = 'error';
   }
   renderVie();
+  renderHomeNextEvent();
+}
+function renderHomeNextEvent(){
+  var el = document.getElementById('home-next-event');
+  if(!el) return;
+  var html = '<div class="next-event-card">';
+  if(tatamiStatus === 'error'){
+    html += '<div class="next-event-empty">Calendrier momentan\u00e9ment indisponible.</div>';
+  } else if(tatamiStatus !== 'ok'){
+    html += '<div class="next-event-empty">Chargement\u2026</div>';
+  } else {
+    var upcoming = tatamiEvents.filter(function(ev){ return !ev.cancelled; })
+      .sort(function(a,b){ return new Date(a.date) - new Date(b.date); });
+    if(!upcoming.length){
+      html += '<div class="next-event-label">Prochain \u00e9v\u00e9nement</div>' +
+        '<div class="next-event-empty">Aucun \u00e9v\u00e9nement pr\u00e9vu pour le moment.</div>';
+    } else {
+      var ev = upcoming[0];
+      var cats = parseJsonArrayField(ev.ageCategories).join(', ');
+      var meta = [ev.discipline, cats, ev.city].filter(Boolean).join(' \u2014 ');
+      html += '<div class="next-event-label">Prochain \u00e9v\u00e9nement</div>' +
+        '<div class="next-event-date">'+esc(formatEventDate(ev))+'</div>' +
+        '<div class="next-event-name">'+esc(ev.name)+'</div>' +
+        (meta ? '<div class="next-event-meta">'+esc(meta)+'</div>' : '');
+    }
+  }
+  html += '<a href="#vie" onclick="showPage(\'vie\');return false;" class="next-event-link">Voir + d\'\u00e9v\u00e9nements \u2192</a>';
+  html += '</div>';
+  el.innerHTML = html;
 }
 
 async function loadTatamiResults(){
@@ -1502,20 +1556,46 @@ function renderTatamiResults(){
   return html;
 }
 
+var ARTICLES_PAGE_SIZE = 8;
+var articlesShownCount = ARTICLES_PAGE_SIZE;
+
+function formatArticleDateDisplay(iso){
+  var d = parseISODate(iso);
+  if(!d) return iso || '';
+  return d.getDate()+' '+FR_MONTHS[d.getMonth()]+' '+d.getFullYear();
+}
+function sortedArticleIndices(){
+  var order = siteData.actus.map(function(a,i){ return i; });
+  order.sort(function(ia, ib){
+    var da = parseISODate(siteData.actus[ia].date);
+    var db = parseISODate(siteData.actus[ib].date);
+    if(!da && !db) return 0;
+    if(!da) return 1;
+    if(!db) return -1;
+    return db - da; // plus r\u00e9cent en premier
+  });
+  return order;
+}
+
 function renderVie(){
   var el = document.getElementById('vie-render');
   if(!el) return;
 
-  var mainHtml = '';
+  var order = sortedArticleIndices();
+  var adminHtml = '';
+  var publicCards = [];
+
   if(isAdmin){
-    mainHtml += '<button class="adm-add-btn" style="margin-bottom:18px;" onclick="addArticle()" type="button">+ Ajouter un article</button>';
+    adminHtml += '<button class="adm-add-btn" style="margin-bottom:18px;" onclick="addArticle()" type="button">+ Ajouter un article</button>';
   }
-  siteData.actus.forEach(function(a, ai){
+
+  order.forEach(function(ai){
+    var a = siteData.actus[ai];
     if(!a.photos) a.photos = [];
     if(isAdmin && editingArticles[ai]){
-      mainHtml += '<div class="adm-article-edit">' +
+      adminHtml += '<div class="adm-article-edit">' +
         '<div class="adm-row-tools" style="margin-bottom:8px;">' +
-          '<input class="adm-input" style="max-width:140px;" data-path="actus.'+ai+'.date" value="'+esc(a.date)+'" oninput="updateField(this)" placeholder="Date">' +
+          '<input type="date" class="adm-input" style="max-width:160px;" data-path="actus.'+ai+'.date" value="'+esc(a.date)+'" oninput="updateField(this)">' +
           '<button class="adm-photo-btn" style="margin-left:auto;" onclick="toggleArticleEdit('+ai+')" type="button">\u2713 Terminer</button>' +
           '<button class="adm-del-btn" onclick="removeArticle('+ai+')">\u2715</button>' +
         '</div>' +
@@ -1525,48 +1605,59 @@ function renderVie(){
       a.photos.forEach(function(p, pi){
         var inputId = 'article-photo-input-'+ai+'-'+pi;
         if(p){
-          mainHtml += '<div class="adm-article-photo-slot">' +
+          adminHtml += '<div class="adm-article-photo-slot">' +
             '<img src="'+p+'">' +
             '<button class="adm-photo-remove" onclick="removeItem(\'actus.'+ai+'.photos\','+pi+')" type="button">\u2715</button>' +
           '</div>';
         } else {
-          mainHtml += '<div class="adm-article-photo-slot adm-article-photo-empty">' +
+          adminHtml += '<div class="adm-article-photo-slot adm-article-photo-empty">' +
             '<label for="'+inputId+'">+ photo</label>' +
             '<input type="file" id="'+inputId+'" accept="image/*" style="display:none;" onchange="handleArticlePhotoUpload(this,\'actus.'+ai+'.photos.'+pi+'\')">' +
           '</div>';
         }
       });
-      mainHtml += '</div>' +
+      adminHtml += '</div>' +
         '<button class="adm-add-btn small" style="margin-top:8px;" onclick="addArticlePhoto('+ai+')" type="button">+ Ajouter une photo</button>' +
         '<input class="adm-input" style="margin-top:8px;" data-path="actus.'+ai+'.instagramUrl" value="'+esc(a.instagramUrl||'')+'" oninput="updateField(this)" placeholder="Lien Instagram (optionnel)">' +
       '</div>';
     } else if(isAdmin){
-      mainHtml += '<div class="adm-article-collapsed">' +
-        '<div class="adm-article-collapsed-info"><b>'+esc(a.titre||'(Sans titre)')+'</b><span>'+esc(a.date)+'</span></div>' +
+      adminHtml += '<div class="adm-article-collapsed">' +
+        '<div class="adm-article-collapsed-info"><b>'+esc(a.titre||'(Sans titre)')+'</b><span>'+esc(formatArticleDateDisplay(a.date))+'</span></div>' +
         '<div class="adm-row-tools">' +
           '<button class="adm-photo-btn" onclick="toggleArticleEdit('+ai+')" type="button">\u270f\ufe0f Modifier</button>' +
           '<button class="adm-del-btn" onclick="removeArticle('+ai+')">\u2715</button>' +
         '</div>' +
       '</div>';
     } else {
-      mainHtml += '<div class="article-card">' +
-        '<div class="article-date">'+esc(a.date)+'</div>' +
+      var card = '<div class="article-card">' +
+        '<div class="article-date">'+esc(formatArticleDateDisplay(a.date))+'</div>' +
         '<div class="article-title">'+esc(a.titre)+'</div>' +
         (a.texte ? '<div class="article-text">'+esc(a.texte)+'</div>' : '');
       var visiblePhotos = a.photos.filter(Boolean);
       if(visiblePhotos.length){
-        mainHtml += '<div class="article-gallery">';
-        visiblePhotos.forEach(function(p){ mainHtml += '<img src="'+p+'">'; });
-        mainHtml += '</div>';
+        card += '<div class="article-gallery">';
+        visiblePhotos.forEach(function(p){ card += '<img src="'+p+'">'; });
+        card += '</div>';
       }
       if(a.instagramUrl){
-        mainHtml += '<blockquote class="instagram-media" data-instgrm-permalink="'+esc(a.instagramUrl)+'" data-instgrm-version="14" style="margin:16px auto 0;"></blockquote>';
+        card += '<blockquote class="instagram-media" data-instgrm-permalink="'+esc(a.instagramUrl)+'" data-instgrm-version="14" style="margin:16px auto 0;"></blockquote>';
       }
-      mainHtml += '</div>';
+      card += '</div>';
+      publicCards.push(card);
     }
   });
-  if(!siteData.actus.length && !isAdmin){
-    mainHtml += '<p style="color:#8a8172;font-style:italic;">Aucune actualit\u00e9 publi\u00e9e pour le moment.</p>';
+
+  var mainHtml = adminHtml;
+  if(!isAdmin){
+    if(!publicCards.length){
+      mainHtml += '<p style="color:#8a8172;font-style:italic;">Aucune actualit\u00e9 publi\u00e9e pour le moment.</p>';
+    } else {
+      var visibleCards = publicCards.slice(0, articlesShownCount);
+      mainHtml += '<div class="article-grid">' + visibleCards.join('') + '</div>';
+      if(publicCards.length > articlesShownCount){
+        mainHtml += '<div class="article-more-wrap"><button class="article-more-btn" onclick="showMoreArticles()" type="button">Voir plus d\'articles \u2193</button></div>';
+      }
+    }
   }
 
   var sideHtml = renderTatamiCalendar() + renderTatamiResults();
@@ -1578,6 +1669,10 @@ function renderVie(){
       if(window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
     });
   }
+}
+function showMoreArticles(){
+  articlesShownCount += ARTICLES_PAGE_SIZE;
+  renderVie();
 }
 function loadInstagramEmbedScript(callback){
   if(window.instgrm){ callback(); return; }
@@ -1613,7 +1708,9 @@ function handleArticlePhotoUpload(input, path){
 }
 var editingArticles = {}; // { index: true } — quels articles sont actuellement ouverts en édition
 function addArticle(){
-  siteData.actus.unshift({date:'', titre:'Nouvel article', texte:'', photos:[], instagramUrl:''});
+  var today = new Date();
+  var todayIso = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  siteData.actus.unshift({date:todayIso, titre:'Nouvel article', texte:'', photos:[], instagramUrl:''});
   editingArticles = {0:true}; // seul le nouvel article (index 0 apr\u00e8s unshift) s'ouvre
   renderAll();
 }
