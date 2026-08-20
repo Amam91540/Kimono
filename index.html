@@ -157,9 +157,9 @@ section{padding:80px 0; position:relative;}
 
 /* ---------- DISCIPLINES ---------- */
 .disciplines{background:var(--rice-soft);}
-.disc-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:1px; background:var(--line); border:1px solid var(--line); position:relative; z-index:1;}
-@media (max-width:520px){.disc-grid{grid-template-columns:1fr;}}
-.disc-card{background:var(--rice-soft); padding:34px 26px; transition:background .2s ease;}
+.disc-grid{display:flex; flex-wrap:wrap; justify-content:center; gap:1px; background:var(--line); border:1px solid var(--line); position:relative; z-index:1;}
+.disc-card{width:230px; flex:1 1 230px; max-width:260px; background:var(--rice-soft); padding:34px 26px; transition:background .2s ease;}
+@media (max-width:520px){.disc-card{flex-basis:100%;}}
 .disc-card:hover{background:var(--rice);}
 .disc-icon{width:38px; height:38px; margin-bottom:18px; color:var(--brass);}
 .disc-num{font-family:'Shippori Mincho',serif; font-size:0.78rem; color:var(--brass); font-weight:700; margin-bottom:6px; display:block;}
@@ -226,11 +226,11 @@ section{padding:80px 0; position:relative;}
 .equipe-dept-head{display:flex; align-items:baseline; gap:14px; margin-bottom:26px;}
 .equipe-dept h3{font-family:'Shippori Mincho',serif; color:var(--indigo-deep); font-size:1.3rem; font-weight:700; white-space:nowrap;}
 .equipe-dept-rule{flex:1; height:1px; background:linear-gradient(to right, var(--brass), transparent);}
-.equipe-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:32px 24px;}
-.equipe-card{background:transparent; display:flex; flex-direction:column; align-items:center; text-align:center; transition:transform .25s ease;}
+.equipe-grid{display:flex; flex-wrap:wrap; justify-content:center; gap:32px 28px;}
+.equipe-card{width:160px; background:transparent; display:flex; flex-direction:column; align-items:center; text-align:center; transition:transform .25s ease;}
 .equipe-card:hover{transform:translateY(-4px);}
 .equipe-photo-ring{
-  width:148px; height:148px; border-radius:50%; padding:5px;
+  width:148px; height:148px; border-radius:50%; padding:2.5px;
   background:conic-gradient(from 200deg, var(--brass), var(--belt-red) 35%, var(--brass) 70%, var(--belt-red) 100%);
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
   box-shadow:0 12px 24px -10px rgba(28,43,69,0.35);
@@ -238,7 +238,7 @@ section{padding:80px 0; position:relative;}
 }
 .equipe-card:hover .equipe-photo-ring{box-shadow:0 16px 30px -8px rgba(168,60,52,0.4);}
 .equipe-avatar, .equipe-avatar-img{
-  width:100%; height:100%; border-radius:50%; border:3px solid var(--rice-soft);
+  width:100%; height:100%; border-radius:50%;
 }
 .equipe-avatar{background:var(--indigo-deep); color:var(--rice); font-family:'Shippori Mincho',serif; font-weight:700; font-size:2.1rem; display:flex; align-items:center; justify-content:center;}
 .equipe-avatar-img{object-fit:cover; display:block;}
@@ -1043,7 +1043,7 @@ function renderEquipe(){
     dept.members.forEach(function(m, mi){
       if(isAdmin){
         var photoId = 'photo-input-'+di+'-'+mi;
-        html += '<div class="equipe-card" style="flex-direction:column;align-items:stretch;gap:8px;">' +
+        html += '<div class="equipe-card" style="width:220px;flex-direction:column;align-items:stretch;gap:8px;">' +
           '<div class="adm-photo-row">' +
             (m.photo ? '<img class="adm-photo-preview" src="'+m.photo+'">' : '<div class="adm-photo-preview"></div>') +
             '<label class="adm-photo-btn" for="'+photoId+'">'+(m.photo?'Changer la photo':'Ajouter une photo')+'</label>' +
