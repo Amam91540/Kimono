@@ -283,11 +283,12 @@ section{padding:80px 0; position:relative;}
 .adm-article-photo-slot .adm-photo-remove{position:absolute; top:2px; right:2px; background:rgba(255,255,255,0.9); border-radius:50%; width:18px; height:18px; font-size:0.62rem; line-height:1; text-decoration:none; display:flex; align-items:center; justify-content:center;}
 .adm-article-photo-empty{border:1.5px dashed var(--brass); display:flex; align-items:center; justify-content:center;}
 .adm-article-photo-empty label{font-size:0.68rem; color:var(--brass); cursor:pointer; font-weight:700; text-align:center;}
-.vie-layout{display:grid; grid-template-columns:1fr 380px; gap:28px; align-items:start;}
+.vie-layout{display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; align-items:start;}
 @media (max-width:860px){.vie-layout{grid-template-columns:1fr;}}
-.vie-main{min-width:0;}
-.vie-side{min-width:0;}
-.article-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; align-content:start;}
+.vie-main{min-width:0; grid-column:span 2;}
+.vie-side{min-width:0; grid-column:span 1;}
+@media (max-width:860px){.vie-main, .vie-side{grid-column:span 1;}}
+.article-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:24px; align-content:start;}
 @media (max-width:640px){.article-grid{grid-template-columns:1fr;}}
 .article-grid .article-card{margin-bottom:0;}
 .article-more-wrap{text-align:center; margin-top:22px;}
@@ -386,6 +387,9 @@ footer{background:var(--indigo-ink); color:rgba(239,233,220,0.5); text-align:cen
 .home-latest-date{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:0.8rem; margin-bottom:4px;}
 .home-latest-title{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:1.05rem; margin-bottom:6px;}
 .home-latest-excerpt{font-size:0.86rem; color:#5a5245; line-height:1.5; flex:1;}
+.home-latest-results-list{flex:1; font-size:0.84rem; color:#5a5245; line-height:1.7;}
+.home-latest-cat{font-weight:700; color:var(--indigo-deep); font-size:0.78rem; margin-top:6px;}
+.home-latest-results-list:first-child .home-latest-cat:first-child{margin-top:0;}
 .home-latest-empty{font-size:0.88rem; color:#8a8172; font-style:italic; flex:1;}
 .home-latest-link{margin-top:14px; color:var(--belt-red); font-weight:700; font-size:0.84rem; align-self:flex-start; position:relative; padding-bottom:2px;}
 .home-latest-link::after{content:""; position:absolute; left:0; right:100%; bottom:0; height:1.5px; background:var(--belt-red); transition:right .25s ease;}
@@ -1429,10 +1433,18 @@ function renderHomeLatestArticle(){
     var groups = groupResultsByEvent(tatamiResults);
     var g = groups[0];
     resultHtml += '<div class="home-latest-date">'+esc(formatResultDateFr(g.eventDate))+'</div>' +
-      '<div class="home-latest-title">'+esc(g.eventName)+'</div>';
-    var totalParticipants = 0;
-    g.catOrder.forEach(function(cat){ totalParticipants += g.byCategory[cat].length; });
-    resultHtml += '<div class="home-latest-excerpt">'+totalParticipants+' r\u00e9sultat'+(totalParticipants>1?'s':'')+' publi\u00e9'+(totalParticipants>1?'s':'')+'</div>';
+      '<div class="home-latest-title">'+esc(g.eventName)+'</div>' +
+      '<div class="home-latest-results-list">';
+    g.catOrder.forEach(function(cat){
+      if(cat){
+        resultHtml += '<div class="home-latest-cat">'+esc(cat)+' :</div>';
+      }
+      g.byCategory[cat].forEach(function(r){
+        var p = formatPlacement(r.result);
+        resultHtml += '<div class="'+p.cls+'">'+esc(r.name)+' \u2014 <b>'+esc(p.text)+'</b></div>';
+      });
+    });
+    resultHtml += '</div>';
   }
   resultHtml += '<a href="#vie" onclick="showPage(\'vie\');return false;" class="home-latest-link">Voir + de r\u00e9sultats \u2192</a>' +
   '</div>';
