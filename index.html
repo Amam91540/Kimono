@@ -263,6 +263,10 @@ section{padding:80px 0; position:relative;}
 .feed-date{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:0.85rem; width:auto; min-width:110px; flex-shrink:0;}
 .feed-item p{font-size:0.88rem; color:#5a5245;}
 .feed-item .tag-result{color:var(--belt-red); font-weight:700;}
+.cancelled-badge{
+  display:inline-block; background:var(--belt-red); color:#fff; font-size:0.66rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.04em; padding:2px 8px; border-radius:20px; vertical-align:middle;
+}
 .medal-gold b{color:#b8860b;}
 .medal-silver b{color:#8a8f98;}
 .medal-bronze b{color:#a5682f;}
@@ -1181,9 +1185,12 @@ function renderTatamiCalendar(){
       monthEvents.forEach(function(ev){
         var cats = parseJsonArrayField(ev.ageCategories).join(', ');
         var meta = [ev.discipline, cats, ev.city].filter(Boolean).join(' \u2014 ');
+        var nameHtml = ev.cancelled
+          ? '<span style="text-decoration:line-through;opacity:0.6;">'+esc(ev.name)+'</span> <span class="cancelled-badge">Annul\u00e9</span>'
+          : esc(ev.name);
         html += '<div class="feed-item">' +
-          '<span class="feed-date">'+esc(formatEventDate(ev))+'</span>' +
-          '<p><span class="tag-result">'+esc(ev.name)+'</span>'+(meta ? '<br><span style="font-size:0.82rem;color:#8a8172;">'+esc(meta)+'</span>' : '')+'</p>' +
+          '<span class="feed-date"'+(ev.cancelled?' style="opacity:0.6;"':'')+'>'+esc(formatEventDate(ev))+'</span>' +
+          '<p><span class="tag-result">'+nameHtml+'</span>'+(meta ? '<br><span style="font-size:0.82rem;color:#8a8172;">'+esc(meta)+'</span>' : '')+'</p>' +
         '</div>';
       });
     }
