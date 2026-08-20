@@ -257,6 +257,10 @@ section{padding:80px 0; position:relative;}
 .article-gallery{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
 .article-gallery img{width:calc(33.333% - 6px); aspect-ratio:1; object-fit:cover; border-radius:3px; flex-shrink:0;}
 .adm-article-edit{background:var(--rice-soft); border:1px dashed var(--brass); border-radius:3px; padding:18px; margin-bottom:16px;}
+.adm-article-collapsed{display:flex; align-items:center; justify-content:space-between; gap:12px; background:#fff; border:1px solid var(--line); border-radius:3px; padding:14px 16px; margin-bottom:12px;}
+.adm-article-collapsed-info{display:flex; flex-direction:column; gap:2px; min-width:0;}
+.adm-article-collapsed-info b{color:var(--indigo-deep); font-size:0.92rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.adm-article-collapsed-info span{color:#8a8172; font-size:0.76rem;}
 .adm-article-edit .adm-input{margin-bottom:8px;}
 .adm-article-photos{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
 .adm-article-photo-slot{position:relative; width:70px; height:70px; border-radius:3px; overflow:hidden; flex-shrink:0;}
@@ -1460,6 +1464,13 @@ function formatPlacement(raw){
   return { text:s, cls:'' };
 }
 
+function formatResultDateFr(iso){
+  var d = parseISODate(iso);
+  if(!d) return iso || '';
+  var dd = String(d.getDate()).padStart(2,'0');
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  return dd+'/'+mm+'/'+d.getFullYear();
+}
 function renderTatamiResults(){
   var html = '<div class="feed-card" style="margin-bottom:28px;">' +
     '<div class="feed-head"><span class="disp">R\u00e9sultats</span><span class="sync-tag">Synchronis\u00e9 avec Tatami</span></div>';
@@ -1472,7 +1483,7 @@ function renderTatamiResults(){
   } else {
     groupResultsByEvent(tatamiResults).forEach(function(g){
       html += '<div class="feed-item">' +
-        '<span class="feed-date">'+esc(g.eventDate || '')+'</span>' +
+        '<span class="feed-date">'+esc(formatResultDateFr(g.eventDate))+'</span>' +
         '<div>' +
           '<div class="tag-result">'+esc(g.eventName)+'</div>';
       g.catOrder.forEach(function(cat){
@@ -1501,11 +1512,12 @@ function renderVie(){
   }
   siteData.actus.forEach(function(a, ai){
     if(!a.photos) a.photos = [];
-    if(isAdmin){
+    if(isAdmin && editingArticles[ai]){
       mainHtml += '<div class="adm-article-edit">' +
         '<div class="adm-row-tools" style="margin-bottom:8px;">' +
           '<input class="adm-input" style="max-width:140px;" data-path="actus.'+ai+'.date" value="'+esc(a.date)+'" oninput="updateField(this)" placeholder="Date">' +
-          '<button class="adm-del-btn" onclick="removeItem(\'actus\','+ai+')" style="margin-left:auto;">\u2715</button>' +
+          '<button class="adm-photo-btn" style="margin-left:auto;" onclick="toggleArticleEdit('+ai+')" type="button">\u2713 Terminer</button>' +
+          '<button class="adm-del-btn" onclick="removeArticle('+ai+')">\u2715</button>' +
         '</div>' +
         '<input class="adm-input" data-path="actus.'+ai+'.titre" value="'+esc(a.titre)+'" oninput="updateField(this)" placeholder="Titre">' +
         '<textarea class="adm-input" style="min-height:70px;" data-path="actus.'+ai+'.texte" oninput="updateField(this)" placeholder="Texte de l\'article">'+esc(a.texte)+'</textarea>' +
@@ -1527,6 +1539,14 @@ function renderVie(){
       mainHtml += '</div>' +
         '<button class="adm-add-btn small" style="margin-top:8px;" onclick="addArticlePhoto('+ai+')" type="button">+ Ajouter une photo</button>' +
         '<input class="adm-input" style="margin-top:8px;" data-path="actus.'+ai+'.instagramUrl" value="'+esc(a.instagramUrl||'')+'" oninput="updateField(this)" placeholder="Lien Instagram (optionnel)">' +
+      '</div>';
+    } else if(isAdmin){
+      mainHtml += '<div class="adm-article-collapsed">' +
+        '<div class="adm-article-collapsed-info"><b>'+esc(a.titre||'(Sans titre)')+'</b><span>'+esc(a.date)+'</span></div>' +
+        '<div class="adm-row-tools">' +
+          '<button class="adm-photo-btn" onclick="toggleArticleEdit('+ai+')" type="button">\u270f\ufe0f Modifier</button>' +
+          '<button class="adm-del-btn" onclick="removeArticle('+ai+')">\u2715</button>' +
+        '</div>' +
       '</div>';
     } else {
       mainHtml += '<div class="article-card">' +
@@ -1591,8 +1611,19 @@ function handleArticlePhotoUpload(input, path){
   };
   reader.readAsDataURL(file);
 }
+var editingArticles = {}; // { index: true } — quels articles sont actuellement ouverts en édition
 function addArticle(){
   siteData.actus.unshift({date:'', titre:'Nouvel article', texte:'', photos:[], instagramUrl:''});
+  editingArticles = {0:true}; // seul le nouvel article (index 0 apr\u00e8s unshift) s'ouvre
+  renderAll();
+}
+function toggleArticleEdit(ai){
+  editingArticles[ai] = !editingArticles[ai];
+  renderAll();
+}
+function removeArticle(ai){
+  siteData.actus.splice(ai,1);
+  editingArticles = {}; // les index d\u00e9calent, on referme tout par s\u00e9curit\u00e9
   renderAll();
 }
 
