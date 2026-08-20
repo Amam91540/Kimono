@@ -325,7 +325,7 @@ section{padding:80px 0; position:relative;}
 .medal-gold b{color:#b8860b;}
 .medal-silver b{color:#8a8f98;}
 .medal-bronze b{color:#a5682f;}
-.qualif-tag{display:inline-block; background:rgba(165,129,58,0.12); color:var(--brass); font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:20px; vertical-align:middle;}
+.qualif-line{font-size:0.74rem; color:var(--brass); font-style:italic; margin-top:1px; margin-bottom:2px;}
 .placeholder-note{padding:16px 24px; font-size:0.78rem; color:#8a8172; font-style:italic; background:var(--rice-soft);}
 .vie-side h3{color:var(--indigo-deep); font-size:1.2rem; margin-bottom:14px;}
 .vie-side p{color:#5a5245; font-size:0.92rem; margin-bottom:18px;}
@@ -1443,7 +1443,8 @@ function renderHomeLatestArticle(){
       }
       g.byCategory[cat].forEach(function(r){
         var p = formatPlacement(r.result);
-        resultHtml += '<div class="'+p.cls+'">'+esc(r.name)+' \u2014 <b>'+esc(p.text)+'</b>'+(r.qualificationFor ? ' <span class="qualif-tag">'+esc(r.qualificationFor)+'</span>' : '')+'</div>';
+        resultHtml += '<div class="'+p.cls+'">'+esc(r.name)+' \u2014 <b>'+esc(p.text)+'</b></div>' +
+          (r.qualificationFor ? '<div class="qualif-line">Qualifi\u00e9 au '+esc(r.qualificationFor)+'</div>' : '');
       });
     });
     resultHtml += '</div>';
@@ -1486,11 +1487,8 @@ function formatEventDate(ev){
   var d1 = parseISODate(ev.date);
   if(!d1) return ev.date || '';
   var d2 = parseISODate(ev.dateEnd);
-  function fmt(d){ return d.getDate()+' '+FR_MONTHS[d.getMonth()]+' '+d.getFullYear(); }
+  function fmt(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getFullYear()).slice(-2); }
   if(d2 && d2.getTime() !== d1.getTime()){
-    if(d1.getMonth() === d2.getMonth() && d1.getFullYear() === d2.getFullYear()){
-      return 'Du '+d1.getDate()+' au '+fmt(d2);
-    }
     return 'Du '+fmt(d1)+' au '+fmt(d2);
   }
   return fmt(d1);
@@ -1614,7 +1612,8 @@ function formatResultDateFr(iso){
   if(!d) return iso || '';
   var dd = String(d.getDate()).padStart(2,'0');
   var mm = String(d.getMonth()+1).padStart(2,'0');
-  return dd+'/'+mm+'/'+d.getFullYear();
+  var yy = String(d.getFullYear()).slice(-2);
+  return dd+'/'+mm+'/'+yy;
 }
 function renderTatamiResults(){
   var html = '<div class="feed-card" style="margin-bottom:28px;">' +
@@ -1637,7 +1636,8 @@ function renderTatamiResults(){
         }
         g.byCategory[cat].forEach(function(r){
           var p = formatPlacement(r.result);
-          html += '<div class="'+p.cls+'" style="font-size:0.86rem;color:#5a5245;'+(cat?'padding-left:10px;':'margin-top:4px;')+'">'+esc(r.name)+' — <b>'+esc(p.text)+'</b>'+(r.qualificationFor ? ' <span class="qualif-tag">'+esc(r.qualificationFor)+'</span>' : '')+'</div>';
+          html += '<div class="'+p.cls+'" style="font-size:0.86rem;color:#5a5245;'+(cat?'padding-left:10px;':'margin-top:4px;')+'">'+esc(r.name)+' — <b>'+esc(p.text)+'</b></div>' +
+            (r.qualificationFor ? '<div class="qualif-line" style="'+(cat?'padding-left:10px;':'')+'">Qualifi\u00e9 au '+esc(r.qualificationFor)+'</div>' : '');
         });
       });
       html += '</div></div>';
