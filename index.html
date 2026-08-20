@@ -1070,7 +1070,8 @@ function renderEquipe(){
         html += '<div class="equipe-card" style="width:220px;flex-direction:column;align-items:stretch;gap:8px;">' +
           '<div class="adm-photo-row">' +
             (m.photo ? '<img class="adm-photo-preview" src="'+m.photo+'">' : '<div class="adm-photo-preview"></div>') +
-            '<label class="adm-photo-btn" for="'+photoId+'">'+(m.photo?'Changer la photo':'Ajouter une photo')+'</label>' +
+            '<label class="adm-photo-btn" for="'+photoId+'">'+(m.photo?'Changer':'Ajouter une photo')+'</label>' +
+            (m.photo ? '<button class="adm-photo-btn" style="background:none;border:none;" onclick="openPhotoEditorFromUrl(\''+m.photo+'\',\'equipe.'+di+'.members.'+mi+'.photo\')" type="button">Ajuster</button>' : '') +
             '<input type="file" id="'+photoId+'" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this,\'equipe.'+di+'.members.'+mi+'.photo\')">' +
             (m.photo ? '<button class="adm-photo-remove" onclick="removePhoto(\'equipe.'+di+'.members.'+mi+'.photo\')" type="button">retirer</button>' : '') +
             '<button class="adm-del-btn" style="margin-left:auto;" onclick="removeItem(\'equipe.'+di+'.members\','+mi+')">\u2715</button>' +
@@ -1164,6 +1165,29 @@ function openPhotoEditor(dataUrl, path){
   };
   img.src = dataUrl;
 }
+function openPhotoEditorFromUrl(url, path){
+  var img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function(){
+    photoEditor.img = img;
+    photoEditor.path = path;
+    var vp = PHOTO_EDITOR_VP;
+    photoEditor.baseScale = Math.max(vp / img.naturalWidth, vp / img.naturalHeight);
+    photoEditor.scale = photoEditor.baseScale;
+    photoEditor.offsetX = 0;
+    photoEditor.offsetY = 0;
+    var previewEl = document.getElementById('photo-editor-img');
+    previewEl.crossOrigin = 'anonymous';
+    previewEl.src = url;
+    document.getElementById('photo-editor-zoom').value = 1;
+    document.getElementById('photo-editor-overlay').style.display = 'flex';
+    renderPhotoEditor();
+  };
+  img.onerror = function(){
+    alert("Impossible de charger cette photo pour l'ajuster. R\u00e9essaie en cliquant sur \u00ab Changer \u00bb et en choisissant \u00e0 nouveau le fichier original.");
+  };
+  img.src = url;
+}
 function renderPhotoEditor(){
   var pe = photoEditor;
   var vp = PHOTO_EDITOR_VP;
@@ -1230,7 +1254,14 @@ function confirmPhotoEditor(){
   var srcW = vp / pe.scale;
   var srcH = vp / pe.scale;
   ctx.drawImage(pe.img, srcX, srcY, srcW, srcH, 0, 0, OUT, OUT);
-  var dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+  var dataUrl;
+  try{
+    dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+  }catch(err){
+    alert("Le navigateur bloque le re-recadrage de cette photo d\u00e9j\u00e0 en ligne (restriction de s\u00e9curit\u00e9). Utilise \u00ab Changer \u00bb pour reprendre le fichier original sur ton appareil.");
+    closePhotoEditor();
+    return;
+  }
   var path = pe.path;
   closePhotoEditor();
   uploadPhotoDataUrl(dataUrl, path);
