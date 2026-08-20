@@ -1437,7 +1437,7 @@ function renderTatamiCalendar(){
   var monthLabel = FR_MONTHS_FULL[tatamiMonthCursor.getMonth()] + ' ' + tatamiMonthCursor.getFullYear();
 
   var html = '<div class="feed-card" style="margin-bottom:28px;">' +
-    '<div class="feed-head"><span class="disp">Calendrier</span><span class="sync-tag">Synchronis\u00e9 avec Tatami</span></div>' +
+    '<div class="feed-head"><span class="disp">Calendrier</span></div>' +
     '<div class="month-nav">' +
       '<button class="month-nav-btn" onclick="changeTatamiMonth(-1)" type="button" aria-label="Mois pr\u00e9c\u00e9dent">\u2039</button>' +
       '<span class="month-nav-label">'+monthLabel+'</span>' +
@@ -1542,7 +1542,7 @@ function formatResultDateFr(iso){
 }
 function renderTatamiResults(){
   var html = '<div class="feed-card" style="margin-bottom:28px;">' +
-    '<div class="feed-head"><span class="disp">R\u00e9sultats</span><span class="sync-tag">Synchronis\u00e9 avec Tatami</span></div>';
+    '<div class="feed-head"><span class="disp">R\u00e9sultats</span></div>';
   if(tatamiResultsStatus === 'loading'){
     html += '<div class="placeholder-note">Chargement des r\u00e9sultats\u2026</div>';
   } else if(tatamiResultsStatus === 'error'){
