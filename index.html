@@ -220,18 +220,31 @@ section{padding:80px 0; position:relative;}
 .horaires-group .horaires-teacher{font-size:0.78rem; color:rgba(239,233,220,0.55); margin:8px 0 16px;}
 
 /* ---------- EQUIPE ---------- */
-.equipe{background:var(--rice-soft);}
-.equipe-dept{position:relative; z-index:1; margin-bottom:38px;}
+.equipe{background:var(--rice-soft); position:relative;}
+.equipe-dept{position:relative; z-index:1; margin-bottom:52px;}
 .equipe-dept:last-of-type{margin-bottom:0;}
-.equipe-dept h3{font-family:'Shippori Mincho',serif; color:var(--indigo-deep); font-size:1.05rem; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--line);}
-.equipe-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:24px;}
-.equipe-card{background:#fff; border:1px solid var(--line); border-radius:4px; overflow:hidden; box-shadow:var(--shadow); transition:transform .2s ease;}
-.equipe-card:hover{transform:translateY(-3px);}
-.equipe-card-info{padding:16px 18px 20px;}
-.equipe-avatar{width:100%; aspect-ratio:4/5; background:var(--indigo-deep); color:var(--rice); font-family:'Shippori Mincho',serif; font-weight:700; font-size:2.4rem; display:flex; align-items:center; justify-content:center;}
-.equipe-avatar-img{width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:var(--rice);}
-.equipe-card .name{font-size:1.05rem;}
-.equipe-card .role{font-size:0.86rem; margin-top:3px;}
+.equipe-dept-head{display:flex; align-items:baseline; gap:14px; margin-bottom:26px;}
+.equipe-dept h3{font-family:'Shippori Mincho',serif; color:var(--indigo-deep); font-size:1.3rem; font-weight:700; white-space:nowrap;}
+.equipe-dept-rule{flex:1; height:1px; background:linear-gradient(to right, var(--brass), transparent);}
+.equipe-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:32px 24px;}
+.equipe-card{background:transparent; display:flex; flex-direction:column; align-items:center; text-align:center; transition:transform .25s ease;}
+.equipe-card:hover{transform:translateY(-4px);}
+.equipe-photo-ring{
+  width:148px; height:148px; border-radius:50%; padding:5px;
+  background:conic-gradient(from 200deg, var(--brass), var(--belt-red) 35%, var(--brass) 70%, var(--belt-red) 100%);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  box-shadow:0 12px 24px -10px rgba(28,43,69,0.35);
+  transition:box-shadow .25s ease;
+}
+.equipe-card:hover .equipe-photo-ring{box-shadow:0 16px 30px -8px rgba(168,60,52,0.4);}
+.equipe-avatar, .equipe-avatar-img{
+  width:100%; height:100%; border-radius:50%; border:3px solid var(--rice-soft);
+}
+.equipe-avatar{background:var(--indigo-deep); color:var(--rice); font-family:'Shippori Mincho',serif; font-weight:700; font-size:2.1rem; display:flex; align-items:center; justify-content:center;}
+.equipe-avatar-img{object-fit:cover; display:block;}
+.equipe-card-info{margin-top:16px;}
+.equipe-card .name{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:1.02rem;}
+.equipe-card .role{font-size:0.8rem; color:var(--brass); margin-top:4px; letter-spacing:0.02em;}
 .adm-photo-row{display:flex; align-items:center; gap:10px;}
 .adm-photo-preview{width:56px; height:56px; border-radius:50%; object-fit:cover; border:1px solid var(--line); flex-shrink:0; background:var(--rice);}
 .adm-photo-btn{font-size:0.72rem; color:var(--brass); cursor:pointer; text-decoration:underline;}
@@ -242,8 +255,6 @@ section{padding:80px 0; position:relative;}
 .article-text{font-size:0.9rem; color:#5a5245; line-height:1.6;}
 .adm-article-edit{background:var(--rice-soft); border:1px dashed var(--brass); border-radius:3px; padding:18px; margin-bottom:16px;}
 .adm-article-edit .adm-input{margin-bottom:8px;}
-.equipe-card .name{font-weight:700; color:var(--indigo-deep); font-size:0.92rem;}
-.equipe-card .role{font-size:0.78rem; color:#8a8172; margin-top:2px;}
 
 /* ---------- VIE DU CLUB ---------- */
 .vie{background:var(--rice);}
@@ -1026,7 +1037,7 @@ function renderEquipe(){
         '<button class="adm-del-btn" onclick="removeItem(\'equipe\','+di+')" title="Supprimer">\u2715</button>' +
       '</div>';
     } else {
-      html += '<h3>'+esc(dept.dept)+'</h3>';
+      html += '<div class="equipe-dept-head"><h3>'+esc(dept.dept)+'</h3><div class="equipe-dept-rule"></div></div>';
     }
     html += '<div class="equipe-grid">';
     dept.members.forEach(function(m, mi){
@@ -1046,7 +1057,7 @@ function renderEquipe(){
         '</div>';
       } else {
         var avatarHtml = m.photo ? '<img class="equipe-avatar-img" src="'+m.photo+'">' : '<div class="equipe-avatar">'+esc(m.initials)+'</div>';
-        html += '<div class="equipe-card">'+avatarHtml+'<div class="equipe-card-info"><div class="name">'+esc(m.name)+'</div><div class="role">'+esc(m.role)+'</div></div></div>';
+        html += '<div class="equipe-card"><div class="equipe-photo-ring">'+avatarHtml+'</div><div class="equipe-card-info"><div class="name">'+esc(m.name)+'</div><div class="role">'+esc(m.role)+'</div></div></div>';
       }
     });
     html += '</div>';
