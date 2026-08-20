@@ -160,7 +160,19 @@ section{padding:80px 0; position:relative;}
 /* ---------- DISCIPLINES ---------- */
 .disciplines{background:var(--rice-soft);}
 .disc-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:1px; background:var(--line); border:1px solid var(--line); position:relative; z-index:1;}
-.disc-card{background:var(--rice-soft); padding:34px 16px; text-align:center; transition:background .2s ease;}
+.disc-card{background:var(--rice-soft); padding:34px 16px; text-align:center; transition:background .2s ease; cursor:pointer;}
+.disc-more{display:inline-block; margin-top:14px; font-size:0.8rem; font-weight:700; color:var(--belt-red);}
+.disc-back-link{display:inline-block; color:#c9a45c; font-size:0.82rem; font-weight:700; margin-bottom:16px;}
+.dd-section{margin-bottom:32px;}
+.dd-section h3{font-family:'Shippori Mincho',serif; color:var(--indigo-deep); font-size:1.2rem; margin-bottom:10px;}
+.dd-section p{font-size:0.94rem; color:#5a5245; line-height:1.7; max-width:70ch;}
+.dd-mini-row{margin-bottom:16px; font-size:0.92rem; color:var(--charcoal);}
+.dd-mini-row:last-child{margin-bottom:0;}
+.dd-gallery{display:flex; flex-wrap:wrap; gap:12px;}
+.dd-gallery img{width:180px; height:180px; object-fit:cover; border-radius:3px;}
+.dd-cta{margin-top:20px;}
+.dd-admin-section{margin-bottom:20px;}
+.dd-admin-label{display:block; font-size:0.78rem; font-weight:700; color:var(--brass); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;}
 @media (max-width:700px){.disc-grid{grid-template-columns:repeat(2, 1fr);}}
 @media (max-width:480px){.disc-grid{grid-template-columns:1fr;}}
 .disc-card:hover{background:var(--rice);}
@@ -605,37 +617,58 @@ body.admin-mode{padding-bottom:64px;}
 <section class="disciplines">
   <div class="wrap">
     <div class="disc-grid">
-      <div class="disc-card">
+      <div class="disc-card" onclick="openDisciplineDetail('Aïkibudo')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6a14 14 0 1 0 12 21"/><path d="M20 14a6 6 0 1 1 -5 9.5"/></svg>
         <span class="disc-num">一 · Aïkibudo</span>
         <h3>Aïkibudo</h3>
         <p>Un art martial de défense fondé sur les déplacements, les clés et les projections. Pas de compétition : la progression se mesure au geste juste.</p>
+        <span class="disc-more">En savoir plus →</span>
       </div>
-      <div class="disc-card">
+      <div class="disc-card" onclick="openDisciplineDetail('Judo')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="7" width="26" height="26" rx="2"/><line x1="20" y1="7" x2="20" y2="33"/><line x1="7" y1="20" x2="33" y2="20"/></svg>
         <span class="disc-num">二 · Judo</span>
         <h3>Judo</h3>
         <p>La voie de la souplesse : chutes, projections et travail au sol, pour les enfants comme pour les adultes. Discipline olympique fondée sur le respect et le contrôle.</p>
+        <span class="disc-more">En savoir plus →</span>
       </div>
-      <div class="disc-card">
+      <div class="disc-card" onclick="openDisciplineDetail('Karaté')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M14 9c-2 0-4 2-4 4v3c-3 0-5 2-5 5v3c0 4 3 7 7 7h12c4 0 7-3 7-7V13c0-2-2-4-4-4s-4 2-4 4"/><path d="M14 9v6M18 8v7M22 8v7"/></svg>
         <span class="disc-num">三 · Karaté</span>
         <h3>Karaté</h3>
         <p>Percussion, kata et self-défense — un travail technique exigeant, du débutant à la ceinture noire, avec ou sans esprit de compétition.</p>
+        <span class="disc-more">En savoir plus →</span>
       </div>
-      <div class="disc-card">
+      <div class="disc-card" onclick="openDisciplineDetail('Kobudo')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="31" x2="31" y2="9"/><line x1="6" y1="34" x2="12" y2="28"/><line x1="28" y1="12" x2="34" y2="6"/></svg>
         <span class="disc-num">四 · Kobudo</span>
         <h3>Kobudo</h3>
         <p>Le maniement traditionnel des armes d'Okinawa (bô, nunchaku, sai), enseigné en complément du karaté aux pratiquants confirmés.</p>
+        <span class="disc-more">En savoir plus →</span>
       </div>
-      <div class="disc-card">
+      <div class="disc-card" onclick="openDisciplineDetail('Taïso')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="15" cy="9" r="3"/><path d="M15 12v9M15 21l-6 8M15 17l11-5M15 21l7 7"/></svg>
         <span class="disc-num">五 · Taïso</span>
         <h3>Taïso</h3>
         <p>Préparation physique et étirements inspirés des arts martiaux japonais : souplesse, respiration et renforcement, pour progresser sereinement dans les autres disciplines.</p>
+        <span class="disc-more">En savoir plus →</span>
       </div>
     </div>
+  </div>
+</section>
+</div>
+
+<div class="page-view" id="page-discipline-detail" style="display:none;">
+<section class="page-hero">
+  <div class="wrap">
+    <a href="#disciplines" onclick="showPage('disciplines');return false;" class="disc-back-link">← Retour aux disciplines</a>
+    <span class="page-eyebrow" id="dd-eyebrow">Discipline</span>
+    <h1 id="dd-title">—</h1>
+  </div>
+</section>
+<div class="seigaiha-strip"></div>
+<section class="disciplines">
+  <div class="wrap">
+    <div id="discipline-detail-render"></div>
   </div>
 </section>
 </div>
@@ -912,6 +945,13 @@ var DEFAULT_DATA = {
   ],
   actus: [
   ],
+  disciplineDetails: {
+    "Aïkibudo": {intro:"", pourQui:"", deroule:"", equipement:"", grades:"", photos:[]},
+    "Judo": {intro:"", pourQui:"", deroule:"", equipement:"", grades:"", photos:[]},
+    "Karaté": {intro:"", pourQui:"", deroule:"", equipement:"", grades:"", photos:[]},
+    "Kobudo": {intro:"", pourQui:"", deroule:"", equipement:"", grades:"", photos:[]},
+    "Taïso": {intro:"", pourQui:"", deroule:"", equipement:"", grades:"", photos:[]}
+  },
   contact: {
     adresse:"Dojo G. Pizzonero — Parc des sports de Villeroy<br>66 Boulevard Charles de Gaulle, 91540 Mennecy",
     adresse2:"Dojo Solidaire — Centre de loisirs Joseph Judith<br>1 Chemin aux Chèvres, 91540 Mennecy<br>Entrée par le portail du stade de foot",
@@ -949,6 +989,9 @@ async function loadSiteData(){
     var data = await res.json();
     if(data && data.content){ siteData = data.content; }
   }catch(e){ /* pas de contenu enregistré : on garde les valeurs par défaut */ }
+  if(!siteData.disciplineDetails){
+    siteData.disciplineDetails = deepClone(DEFAULT_DATA.disciplineDetails);
+  }
   renderAll();
 }
 async function saveSiteData(){
@@ -1018,6 +1061,7 @@ function renderAll(){
   renderVie();
   renderContact();
   renderHomeLatestArticle();
+  if(currentDisciplineId) renderDisciplineDetail();
 }
 
 function renderHoraires(){
@@ -1127,6 +1171,128 @@ function renderTarifs(){
 function addTarifRow(di){
   siteData.tarifs[di].rows.push({cat:'Nouvelle cat\u00e9gorie',mennecois:'0 €',exterieurs:'0 €'});
   renderAll();
+}
+
+/* ---------------- PAGE D\u00c9TAIL D'UNE DISCIPLINE ---------------- */
+var currentDisciplineId = null;
+var DISCIPLINE_KANJI = {"Aïkibudo":"一","Judo":"二","Karaté":"三","Kobudo":"四","Taïso":"五"};
+
+function openDisciplineDetail(key){
+  currentDisciplineId = key;
+  showPage('discipline-detail');
+  renderDisciplineDetail();
+}
+
+function renderDisciplineDetail(){
+  var key = currentDisciplineId;
+  if(!key || !siteData) return;
+  if(!siteData.disciplineDetails) siteData.disciplineDetails = deepClone(DEFAULT_DATA.disciplineDetails);
+  if(!siteData.disciplineDetails[key]) siteData.disciplineDetails[key] = {intro:'', pourQui:'', deroule:'', equipement:'', grades:'', photos:[]};
+  var d = siteData.disciplineDetails[key];
+  if(!d.photos) d.photos = [];
+
+  document.getElementById('dd-eyebrow').textContent = (DISCIPLINE_KANJI[key]||'') + ' \u00b7 Discipline';
+  document.getElementById('dd-title').textContent = key;
+
+  var el = document.getElementById('discipline-detail-render');
+  if(!el) return;
+  var html = '';
+
+  var sections = [
+    {key:'intro', label:'Pr\u00e9sentation', placeholder:'Histoire, philosophie, ce qui distingue cette discipline...'},
+    {key:'pourQui', label:'Pour qui ?', placeholder:'\u00c2ges concern\u00e9s, niveau requis, avec ou sans comp\u00e9tition...'},
+    {key:'deroule', label:'Le d\u00e9roul\u00e9 d\u2019un cours type', placeholder:'\u00c9chauffement, technique, mise en pratique...'},
+    {key:'equipement', label:'\u00c9quipement n\u00e9cessaire', placeholder:'Kimono, protections, pr\u00eat possible pour d\u00e9buter...'},
+    {key:'grades', label:'Passages de grade', placeholder:'Comment progresse-t-on dans cette discipline...'}
+  ];
+
+  if(isAdmin){
+    sections.forEach(function(s){
+      html += '<div class="dd-admin-section">' +
+        '<label class="dd-admin-label">'+esc(s.label)+'</label>' +
+        '<textarea class="adm-input" style="min-height:90px;" data-path="disciplineDetails.'+key+'.'+s.key+'" oninput="updateField(this)" placeholder="'+esc(s.placeholder)+'">'+esc(d[s.key])+'</textarea>' +
+      '</div>';
+    });
+    html += '<div class="dd-admin-section"><label class="dd-admin-label">Photos</label><div class="adm-article-photos">';
+    d.photos.forEach(function(p, pi){
+      var inputId = 'dd-photo-input-'+pi;
+      if(p){
+        html += '<div class="adm-article-photo-slot"><img src="'+p+'"><button class="adm-photo-remove" onclick="removeItem(\'disciplineDetails.'+key+'.photos\','+pi+')" type="button">\u2715</button></div>';
+      } else {
+        html += '<div class="adm-article-photo-slot adm-article-photo-empty"><label for="'+inputId+'">+ photo</label>' +
+          '<input type="file" id="'+inputId+'" accept="image/*" style="display:none;" onchange="handleArticlePhotoUpload(this,\'disciplineDetails.'+key+'.photos.'+pi+'\')"></div>';
+      }
+    });
+    html += '</div><button class="adm-add-btn small" style="margin-top:8px;" onclick="addDisciplinePhoto(\''+key+'\')" type="button">+ Ajouter une photo</button></div>';
+  } else {
+    sections.forEach(function(s){
+      if(d[s.key]){
+        html += '<div class="dd-section"><h3>'+esc(s.label)+'</h3><p>'+esc(d[s.key]).replace(/\n/g,'<br>')+'</p></div>';
+      }
+    });
+    var photos = d.photos.filter(Boolean);
+    if(photos.length){
+      html += '<div class="dd-section"><h3>En images</h3><div class="dd-gallery">';
+      photos.forEach(function(p){ html += '<img src="'+esc(p)+'">'; });
+      html += '</div></div>';
+    }
+  }
+
+  // Horaires spécifiques à cette discipline (lecture seule, tirés des données existantes)
+  var discHoraires = siteData.horaires.filter(function(h){ return h.discipline === key; });
+  if(discHoraires.length && !isAdmin){
+    html += '<div class="dd-section"><h3>Horaires</h3>';
+    discHoraires.forEach(function(disc){
+      disc.groups.forEach(function(g){
+        html += '<div class="dd-mini-row"><b>'+esc(g.name)+'</b>'+(g.note?' \u2014 '+esc(g.note):'')+'<div class="slot-list" style="margin-top:6px;">';
+        g.slots.forEach(function(s){
+          html += '<div class="slot-line"><span class="day-pill">'+esc(s.day)+'</span><span class="slot-time">'+esc(s.time)+'</span>'+(s.lieu?'<span class="slot-lieu">'+esc(s.lieu)+'</span>':'')+'</div>';
+        });
+        html += '</div></div>';
+      });
+    });
+    html += '<a href="#horaires" onclick="showPage(\'horaires\');return false;" class="hero-link" style="color:var(--belt-red);display:inline-block;margin-top:10px;">Voir tous les horaires \u2192</a></div>';
+  }
+
+  // Tarifs spécifiques
+  var discTarifs = siteData.tarifs.filter(function(t){ return t.discipline === key; });
+  if(discTarifs.length && !isAdmin){
+    html += '<div class="dd-section"><h3>Tarifs</h3><table class="price-table">' +
+      '<thead><tr><th>Cat\u00e9gorie</th><th>Menne\u00e7ois</th><th>Ext\u00e9rieurs</th></tr></thead><tbody>';
+    discTarifs.forEach(function(t){
+      t.rows.forEach(function(r){
+        html += '<tr><td>'+esc(r.cat)+'</td><td class="price">'+esc(r.mennecois)+'</td><td class="price">'+esc(r.exterieurs)+'</td></tr>';
+      });
+    });
+    html += '</tbody></table></div>';
+  }
+
+  // Enseignants de cette discipline
+  var discTeam = siteData.equipe.filter(function(dep){ return dep.dept.indexOf(key) !== -1; });
+  if(discTeam.length && !isAdmin){
+    html += '<div class="dd-section"><h3>Les enseignants</h3><div class="equipe-grid">';
+    discTeam.forEach(function(dep){
+      dep.members.forEach(function(m){
+        var avatarHtml = m.photo ? '<img class="equipe-avatar-img" src="'+m.photo+'">' : '<div class="equipe-avatar">'+esc(m.initials)+'</div>';
+        html += '<div class="equipe-card"><div class="equipe-photo-ring">'+avatarHtml+'</div><div class="equipe-card-info"><div class="name">'+esc(m.name)+'</div><div class="role">'+esc(m.role)+'</div></div></div>';
+      });
+    });
+    html += '</div></div>';
+  }
+
+  if(!isAdmin){
+    html += '<div class="dd-cta"><a href="#contact" onclick="showPage(\'contact\');return false;" class="btn btn-primary">Nous contacter pour '+esc(key)+'</a></div>';
+  }
+
+  el.innerHTML = html;
+}
+function addDisciplinePhoto(key){
+  if(!siteData.disciplineDetails[key].photos) siteData.disciplineDetails[key].photos = [];
+  var idx = siteData.disciplineDetails[key].photos.length;
+  siteData.disciplineDetails[key].photos.push('');
+  renderDisciplineDetail();
+  var input = document.getElementById('dd-photo-input-'+idx);
+  if(input) input.click();
 }
 
 function renderEquipe(){
