@@ -371,6 +371,30 @@ footer{background:var(--indigo-ink); color:rgba(239,233,220,0.5); text-align:cen
 .admin-logout-btn{background:transparent; color:var(--rice-soft); border:1px solid rgba(239,233,220,0.35) !important;}
 body.admin-mode{padding-bottom:64px;}
 
+/* ---------------- \u00c9diteur de recadrage photo ---------------- */
+.photo-editor-overlay{
+  display:none; position:fixed; inset:0; z-index:300; background:rgba(18,32,58,0.7);
+  align-items:center; justify-content:center; padding:20px;
+}
+.photo-editor-overlay.show{display:flex;}
+.photo-editor-box{
+  background:var(--rice-soft); border-radius:6px; padding:28px; max-width:340px; width:100%;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.4); text-align:center;
+}
+.photo-editor-box h3{color:var(--indigo-deep); font-family:'Shippori Mincho',serif; font-size:1.15rem; margin-bottom:6px;}
+.photo-editor-box p{color:#8a8172; font-size:0.8rem; margin-bottom:18px; line-height:1.5;}
+.photo-editor-viewport{
+  width:260px; height:260px; margin:0 auto 16px; border-radius:50%; overflow:hidden; position:relative;
+  background:#e8e4d8; cursor:grab; border:3px solid var(--brass); touch-action:none; user-select:none;
+}
+.photo-editor-viewport:active{cursor:grabbing;}
+.photo-editor-viewport img{position:absolute; max-width:none; pointer-events:none;}
+.photo-editor-box input[type="range"]{width:100%; margin-bottom:20px; accent-color:var(--belt-red);}
+.photo-editor-actions{display:flex; gap:10px;}
+.photo-editor-actions button{flex:1; padding:11px; border-radius:2px; font-weight:700; font-size:0.85rem; cursor:pointer; border:1.5px solid var(--indigo-deep); font-family:inherit;}
+.photo-editor-actions .btn-cancel{background:transparent; color:var(--indigo-deep);}
+.photo-editor-actions .btn-confirm{background:var(--indigo-deep); color:#fff;}
+
 .adm-input{
   width:100%; padding:8px 10px; border:1px solid var(--brass); border-radius:2px; font-family:inherit;
   font-size:0.85rem; background:rgba(165,129,58,0.06); color:inherit;
@@ -1083,36 +1107,133 @@ function addEquipeDept(){
 function handlePhotoUpload(input, path){
   var file = input.files && input.files[0];
   if(!file) return;
-  if(file.size > 2*1024*1024){
-    alert('Photo trop lourde (max ~2 Mo). Choisis une image plus l\u00e9g\u00e8re.');
+  if(file.size > 8*1024*1024){
+    alert('Photo trop lourde (max ~8 Mo). Choisis une image plus l\u00e9g\u00e8re.');
     return;
   }
   var reader = new FileReader();
-  reader.onload = async function(e){
-    setAdminStatus('Envoi de la photo\u2026');
-    try{
-      var res = await fetch(TATAMI_CALENDAR_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'text/plain;charset=utf-8'},
-        body: JSON.stringify({ password: ADMIN_PASSWORD, action: 'uploadPhoto', photoDataUrl: e.target.result })
-      });
-      var result = await res.json();
-      if(result && result.ok){
-        setPath(siteData, path, result.url);
-        setAdminStatus('Photo envoy\u00e9e \u2713 \u2014 pense \u00e0 cliquer sur Enregistrer pour publier les autres changements.');
-      } else {
-        setAdminStatus("\u00c9chec de l'envoi de la photo : " + (result && result.error ? result.error : 'erreur inconnue'));
-      }
-    }catch(err){
-      setAdminStatus("\u00c9chec de l'envoi de la photo \u2014 v\u00e9rifie ta connexion.");
-    }
-    renderAll();
+  reader.onload = function(e){
+    openPhotoEditor(e.target.result, path);
   };
   reader.readAsDataURL(file);
 }
 function removePhoto(path){
   setPath(siteData, path, '');
   renderAll();
+}
+
+async function uploadPhotoDataUrl(dataUrl, path){
+  setAdminStatus('Envoi de la photo\u2026');
+  try{
+    var res = await fetch(TATAMI_CALENDAR_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({ password: ADMIN_PASSWORD, action: 'uploadPhoto', photoDataUrl: dataUrl })
+    });
+    var result = await res.json();
+    if(result && result.ok){
+      setPath(siteData, path, result.url);
+      setAdminStatus('Photo envoy\u00e9e \u2713 \u2014 pense \u00e0 cliquer sur Enregistrer pour publier les autres changements.');
+    } else {
+      setAdminStatus("\u00c9chec de l'envoi de la photo : " + (result && result.error ? result.error : 'erreur inconnue'));
+    }
+  }catch(err){
+    setAdminStatus("\u00c9chec de l'envoi de la photo \u2014 v\u00e9rifie ta connexion.");
+  }
+  renderAll();
+}
+
+/* ---------------- \u00c9diteur de recadrage photo (mode admin) ---------------- */
+var photoEditor = { img:null, path:null, scale:1, baseScale:1, offsetX:0, offsetY:0, dragging:false, startX:0, startY:0, startOffX:0, startOffY:0 };
+var PHOTO_EDITOR_VP = 260; // taille du cadre de pr\u00e9visualisation, en px
+
+function openPhotoEditor(dataUrl, path){
+  var img = new Image();
+  img.onload = function(){
+    photoEditor.img = img;
+    photoEditor.path = path;
+    var vp = PHOTO_EDITOR_VP;
+    photoEditor.baseScale = Math.max(vp / img.naturalWidth, vp / img.naturalHeight);
+    photoEditor.scale = photoEditor.baseScale;
+    photoEditor.offsetX = 0;
+    photoEditor.offsetY = 0;
+    document.getElementById('photo-editor-img').src = dataUrl;
+    document.getElementById('photo-editor-zoom').value = 1;
+    document.getElementById('photo-editor-overlay').style.display = 'flex';
+    renderPhotoEditor();
+  };
+  img.src = dataUrl;
+}
+function renderPhotoEditor(){
+  var pe = photoEditor;
+  var vp = PHOTO_EDITOR_VP;
+  var w = pe.img.naturalWidth * pe.scale;
+  var h = pe.img.naturalHeight * pe.scale;
+  var left = (vp - w) / 2 + pe.offsetX;
+  var top = (vp - h) / 2 + pe.offsetY;
+  var el = document.getElementById('photo-editor-img');
+  el.style.width = w + 'px';
+  el.style.height = h + 'px';
+  el.style.left = left + 'px';
+  el.style.top = top + 'px';
+}
+function clampPhotoOffset(){
+  var pe = photoEditor;
+  var vp = PHOTO_EDITOR_VP;
+  var w = pe.img.naturalWidth * pe.scale;
+  var h = pe.img.naturalHeight * pe.scale;
+  var maxOffX = Math.max(0, (w - vp) / 2);
+  var maxOffY = Math.max(0, (h - vp) / 2);
+  pe.offsetX = Math.max(-maxOffX, Math.min(maxOffX, pe.offsetX));
+  pe.offsetY = Math.max(-maxOffY, Math.min(maxOffY, pe.offsetY));
+}
+function photoEditorZoomChange(val){
+  var pe = photoEditor;
+  pe.scale = pe.baseScale * parseFloat(val);
+  clampPhotoOffset();
+  renderPhotoEditor();
+}
+function photoEditorDragStart(clientX, clientY){
+  var pe = photoEditor;
+  pe.dragging = true;
+  pe.startX = clientX; pe.startY = clientY;
+  pe.startOffX = pe.offsetX; pe.startOffY = pe.offsetY;
+}
+function photoEditorDragMove(clientX, clientY){
+  var pe = photoEditor;
+  if(!pe.dragging) return;
+  pe.offsetX = pe.startOffX + (clientX - pe.startX);
+  pe.offsetY = pe.startOffY + (clientY - pe.startY);
+  clampPhotoOffset();
+  renderPhotoEditor();
+}
+function photoEditorDragEnd(){
+  photoEditor.dragging = false;
+}
+function closePhotoEditor(){
+  document.getElementById('photo-editor-overlay').style.display = 'none';
+  photoEditor.img = null;
+}
+function confirmPhotoEditor(){
+  var pe = photoEditor;
+  var vp = PHOTO_EDITOR_VP;
+  var OUT = 480;
+  var canvas = document.createElement('canvas');
+  canvas.width = OUT; canvas.height = OUT;
+  var ctx = canvas.getContext('2d');
+  var w = pe.img.naturalWidth * pe.scale;
+  var h = pe.img.naturalHeight * pe.scale;
+  var left = (vp - w) / 2 + pe.offsetX;
+  var top = (vp - h) / 2 + pe.offsetY;
+  var srcX = -left / pe.scale;
+  var srcY = -top / pe.scale;
+  var srcW = vp / pe.scale;
+  var srcH = vp / pe.scale;
+  ctx.drawImage(pe.img, srcX, srcY, srcW, srcH, 0, 0, OUT, OUT);
+  var dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+  var path = pe.path;
+  closePhotoEditor();
+  uploadPhotoDataUrl(dataUrl, path);
 }
 
 var TATAMI_CALENDAR_URL = 'https://script.google.com/macros/s/AKfycbyiFTFDEkclqoL8XFY0P_8Dnn4PREFq483qIRwQJ5f-_shw9A6fWRdY8eNcOaL649vLeA/exec';
@@ -1396,7 +1517,32 @@ function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-window.addEventListener('DOMContentLoaded', function(){ loadSiteData(); loadTatamiCalendar(); loadTatamiResults(); });
+window.addEventListener('DOMContentLoaded', function(){
+  loadSiteData(); loadTatamiCalendar(); loadTatamiResults();
+
+  var vp = document.getElementById('photo-editor-viewport');
+  if(vp){
+    vp.addEventListener('mousedown', function(e){
+      photoEditorDragStart(e.clientX, e.clientY);
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function(e){
+      photoEditorDragMove(e.clientX, e.clientY);
+    });
+    window.addEventListener('mouseup', function(){ photoEditorDragEnd(); });
+
+    vp.addEventListener('touchstart', function(e){
+      var t = e.touches[0];
+      photoEditorDragStart(t.clientX, t.clientY);
+    }, {passive:true});
+    vp.addEventListener('touchmove', function(e){
+      var t = e.touches[0];
+      photoEditorDragMove(t.clientX, t.clientY);
+      e.preventDefault();
+    }, {passive:false});
+    vp.addEventListener('touchend', function(){ photoEditorDragEnd(); });
+  }
+});
 </script>
 
 <div class="admin-bar" id="admin-bar">
@@ -1404,6 +1550,21 @@ window.addEventListener('DOMContentLoaded', function(){ loadSiteData(); loadTata
   <div class="actions">
     <button class="admin-save-btn" onclick="saveSiteData()" type="button">Enregistrer les modifications</button>
     <button class="admin-logout-btn" onclick="logoutAdmin()" type="button">Quitter le mode admin</button>
+  </div>
+</div>
+
+<div class="photo-editor-overlay" id="photo-editor-overlay">
+  <div class="photo-editor-box">
+    <h3>Ajuster la photo</h3>
+    <p>Fais glisser l'image pour la repositionner, et utilise le curseur pour zoomer.</p>
+    <div class="photo-editor-viewport" id="photo-editor-viewport">
+      <img id="photo-editor-img" draggable="false" alt="">
+    </div>
+    <input type="range" id="photo-editor-zoom" min="1" max="3" step="0.01" value="1" oninput="photoEditorZoomChange(this.value)">
+    <div class="photo-editor-actions">
+      <button class="btn-cancel" onclick="closePhotoEditor()" type="button">Annuler</button>
+      <button class="btn-confirm" onclick="confirmPhotoEditor()" type="button">Valider et envoyer</button>
+    </div>
   </div>
 </div>
 
