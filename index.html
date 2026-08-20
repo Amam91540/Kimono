@@ -250,12 +250,24 @@ section{padding:80px 0; position:relative;}
 .adm-photo-preview{width:56px; height:56px; border-radius:50%; object-fit:cover; border:1px solid var(--line); flex-shrink:0; background:var(--rice);}
 .adm-photo-btn{font-size:0.72rem; color:var(--brass); cursor:pointer; text-decoration:underline;}
 .adm-photo-remove{font-size:0.7rem; color:var(--belt-red); cursor:pointer; text-decoration:underline; background:none; border:none; font-family:inherit;}
-.article-card{background:var(--rice-soft); border:1px solid var(--line); border-radius:3px; padding:22px 24px; margin-bottom:16px;}
+.article-card{background:#fff; border:1px solid var(--line); border-radius:3px; padding:22px 24px; margin-bottom:20px; box-shadow:var(--shadow);}
 .article-date{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:0.82rem; margin-bottom:6px;}
-.article-title{font-weight:700; color:var(--indigo-deep); font-size:1.02rem; margin-bottom:8px;}
+.article-title{font-weight:700; color:var(--indigo-deep); font-size:1.1rem; margin-bottom:8px; font-family:'Shippori Mincho',serif;}
 .article-text{font-size:0.9rem; color:#5a5245; line-height:1.6;}
+.article-gallery{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+.article-gallery img{width:calc(33.333% - 6px); aspect-ratio:1; object-fit:cover; border-radius:3px; flex-shrink:0;}
 .adm-article-edit{background:var(--rice-soft); border:1px dashed var(--brass); border-radius:3px; padding:18px; margin-bottom:16px;}
 .adm-article-edit .adm-input{margin-bottom:8px;}
+.adm-article-photos{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+.adm-article-photo-slot{position:relative; width:70px; height:70px; border-radius:3px; overflow:hidden; flex-shrink:0;}
+.adm-article-photo-slot img{width:100%; height:100%; object-fit:cover; display:block;}
+.adm-article-photo-slot .adm-photo-remove{position:absolute; top:2px; right:2px; background:rgba(255,255,255,0.9); border-radius:50%; width:18px; height:18px; font-size:0.62rem; line-height:1; text-decoration:none; display:flex; align-items:center; justify-content:center;}
+.adm-article-photo-empty{border:1.5px dashed var(--brass); display:flex; align-items:center; justify-content:center;}
+.adm-article-photo-empty label{font-size:0.68rem; color:var(--brass); cursor:pointer; font-weight:700; text-align:center;}
+.vie-layout{display:grid; grid-template-columns:2fr 1fr; gap:32px; align-items:start;}
+@media (max-width:860px){.vie-layout{grid-template-columns:1fr;}}
+.vie-main{min-width:0;}
+.vie-side{min-width:0;}
 
 /* ---------- VIE DU CLUB ---------- */
 .vie{background:var(--rice);}
@@ -1482,38 +1494,105 @@ function renderTatamiResults(){
 function renderVie(){
   var el = document.getElementById('vie-render');
   if(!el) return;
-  var html = '<div class="vie-single">';
-  html += renderTatamiCalendar();
-  html += renderTatamiResults();
+
+  var mainHtml = '';
   if(isAdmin){
-    html += '<button class="adm-add-btn" style="margin-bottom:18px;" onclick="addArticle()" type="button">+ Ajouter un article</button>';
+    mainHtml += '<button class="adm-add-btn" style="margin-bottom:18px;" onclick="addArticle()" type="button">+ Ajouter un article</button>';
   }
   siteData.actus.forEach(function(a, ai){
+    if(!a.photos) a.photos = [];
     if(isAdmin){
-      html += '<div class="adm-article-edit">' +
+      mainHtml += '<div class="adm-article-edit">' +
         '<div class="adm-row-tools" style="margin-bottom:8px;">' +
           '<input class="adm-input" style="max-width:140px;" data-path="actus.'+ai+'.date" value="'+esc(a.date)+'" oninput="updateField(this)" placeholder="Date">' +
           '<button class="adm-del-btn" onclick="removeItem(\'actus\','+ai+')" style="margin-left:auto;">\u2715</button>' +
         '</div>' +
         '<input class="adm-input" data-path="actus.'+ai+'.titre" value="'+esc(a.titre)+'" oninput="updateField(this)" placeholder="Titre">' +
         '<textarea class="adm-input" style="min-height:70px;" data-path="actus.'+ai+'.texte" oninput="updateField(this)" placeholder="Texte de l\'article">'+esc(a.texte)+'</textarea>' +
+        '<div class="adm-article-photos">';
+      a.photos.forEach(function(p, pi){
+        var inputId = 'article-photo-input-'+ai+'-'+pi;
+        if(p){
+          mainHtml += '<div class="adm-article-photo-slot">' +
+            '<img src="'+p+'">' +
+            '<button class="adm-photo-remove" onclick="removeItem(\'actus.'+ai+'.photos\','+pi+')" type="button">\u2715</button>' +
+          '</div>';
+        } else {
+          mainHtml += '<div class="adm-article-photo-slot adm-article-photo-empty">' +
+            '<label for="'+inputId+'">+ photo</label>' +
+            '<input type="file" id="'+inputId+'" accept="image/*" style="display:none;" onchange="handleArticlePhotoUpload(this,\'actus.'+ai+'.photos.'+pi+'\')">' +
+          '</div>';
+        }
+      });
+      mainHtml += '</div>' +
+        '<button class="adm-add-btn small" style="margin-top:8px;" onclick="addArticlePhoto('+ai+')" type="button">+ Ajouter une photo</button>' +
+        '<input class="adm-input" style="margin-top:8px;" data-path="actus.'+ai+'.instagramUrl" value="'+esc(a.instagramUrl||'')+'" oninput="updateField(this)" placeholder="Lien Instagram (optionnel)">' +
       '</div>';
     } else {
-      html += '<div class="article-card">' +
+      mainHtml += '<div class="article-card">' +
         '<div class="article-date">'+esc(a.date)+'</div>' +
         '<div class="article-title">'+esc(a.titre)+'</div>' +
-        '<div class="article-text">'+esc(a.texte)+'</div>' +
-      '</div>';
+        (a.texte ? '<div class="article-text">'+esc(a.texte)+'</div>' : '');
+      var visiblePhotos = a.photos.filter(Boolean);
+      if(visiblePhotos.length){
+        mainHtml += '<div class="article-gallery">';
+        visiblePhotos.forEach(function(p){ mainHtml += '<img src="'+p+'">'; });
+        mainHtml += '</div>';
+      }
+      if(a.instagramUrl){
+        mainHtml += '<blockquote class="instagram-media" data-instgrm-permalink="'+esc(a.instagramUrl)+'" data-instgrm-version="14" style="margin:16px auto 0;"></blockquote>';
+      }
+      mainHtml += '</div>';
     }
   });
   if(!siteData.actus.length && !isAdmin){
-    html += '<p style="color:#8a8172;font-style:italic;">Aucune actualit\u00e9 publi\u00e9e pour le moment.</p>';
+    mainHtml += '<p style="color:#8a8172;font-style:italic;">Aucune actualit\u00e9 publi\u00e9e pour le moment.</p>';
   }
-  html += '</div>';
-  el.innerHTML = html;
+
+  var sideHtml = renderTatamiCalendar() + renderTatamiResults();
+
+  el.innerHTML = '<div class="vie-layout"><div class="vie-main">'+mainHtml+'</div><div class="vie-side">'+sideHtml+'</div></div>';
+
+  if(!isAdmin && el.querySelector('.instagram-media')){
+    loadInstagramEmbedScript(function(){
+      if(window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
+    });
+  }
+}
+function loadInstagramEmbedScript(callback){
+  if(window.instgrm){ callback(); return; }
+  var existing = document.getElementById('instagram-embed-script');
+  if(existing){ existing.addEventListener('load', callback); return; }
+  var s = document.createElement('script');
+  s.id = 'instagram-embed-script';
+  s.src = 'https://www.instagram.com/embed.js';
+  s.async = true;
+  s.onload = callback;
+  document.body.appendChild(s);
+}
+function addArticlePhoto(ai){
+  if(!siteData.actus[ai].photos) siteData.actus[ai].photos = [];
+  var idx = siteData.actus[ai].photos.length;
+  siteData.actus[ai].photos.push('');
+  renderAll();
+  var input = document.getElementById('article-photo-input-'+ai+'-'+idx);
+  if(input) input.click();
+}
+function handleArticlePhotoUpload(input, path){
+  var file = input.files && input.files[0];
+  if(!file) return;
+  if(file.size > 8*1024*1024){
+    alert('Photo trop lourde (max ~8 Mo). Choisis une image plus l\u00e9g\u00e8re.');
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    openPhotoEditor(e.target.result, path);
+  };
+  reader.readAsDataURL(file);
 }
 function addArticle(){
-  siteData.actus.unshift({date:'', titre:'Nouvel article', texte:''});
+  siteData.actus.unshift({date:'', titre:'Nouvel article', texte:'', photos:[], instagramUrl:''});
   renderAll();
 }
 
