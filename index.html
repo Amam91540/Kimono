@@ -817,28 +817,28 @@ function removeItem(path, index){
   renderAll();
 }
 
-/* ---- init / persistence ---- */
+/* ---- init / persistence (via Google Sheets KIMONO, par le script Apps Script) ---- */
 async function loadSiteData(){
   siteData = deepClone(DEFAULT_DATA);
   try{
-    if(window.storage){
-      var res = await window.storage.get('amam-site-content', true);
-      if(res && res.value){ siteData = JSON.parse(res.value); }
-    }
+    var res = await fetch(TATAMI_CALENDAR_URL + '?type=content');
+    var data = await res.json();
+    if(data && data.content){ siteData = data.content; }
   }catch(e){ /* pas de contenu enregistré : on garde les valeurs par défaut */ }
   renderAll();
 }
 async function saveSiteData(){
   setAdminStatus('Enregistrement…');
   try{
-    if(window.storage){
-      var result = await window.storage.set('amam-site-content', JSON.stringify(siteData), true);
-      setAdminStatus(result ? 'Modifications enregistrées ✓ (visibles par tous les visiteurs)' : "Échec de l'enregistrement.");
-    } else {
-      setAdminStatus('Stockage indisponible dans ce contexte — modifications visibles seulement dans cette session.');
-    }
+    var res = await fetch(TATAMI_CALENDAR_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({ password: ADMIN_PASSWORD, content: siteData })
+    });
+    var result = await res.json();
+    setAdminStatus(result && result.ok ? 'Modifications enregistrées ✓ (visibles par tous les visiteurs)' : "Échec de l'enregistrement : " + (result && result.error ? result.error : 'erreur inconnue'));
   }catch(e){
-    setAdminStatus('Stockage indisponible dans ce contexte — modifications visibles seulement dans cette session.');
+    setAdminStatus("Échec de l'enregistrement — vérifie ta connexion.");
   }
 }
 function setAdminStatus(msg){
