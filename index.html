@@ -1192,6 +1192,12 @@ function renderTatamiCalendar(){
   return html;
 }
 
+function placementRank(raw){
+  if(!raw) return 9999;
+  var m = String(raw).trim().match(/^(\d+)/);
+  return m ? parseInt(m[1],10) : 9999;
+}
+
 function groupResultsByEvent(results){
   var groups = {};
   var order = [];
@@ -1205,6 +1211,12 @@ function groupResultsByEvent(results){
     var cat = r.ageCategory || '';
     if(!g.byCategory[cat]){ g.byCategory[cat] = []; g.catOrder.push(cat); }
     g.byCategory[cat].push(r);
+  });
+  order.forEach(function(k){
+    var g = groups[k];
+    g.catOrder.forEach(function(cat){
+      g.byCategory[cat].sort(function(a,b){ return placementRank(a.result) - placementRank(b.result); });
+    });
   });
   return order.map(function(k){ return groups[k]; });
 }
