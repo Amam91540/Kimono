@@ -720,8 +720,7 @@ var DEFAULT_DATA = {
       {dot:2,name:"Judo 1",note:"6-8 ans",slots:[{day:"Lundi",time:"17h30 – 18h30",lieu:"Dojo G. Pizzonero"},{day:"Jeudi",time:"18h – 19h",lieu:"Dojo G. Pizzonero"}]},
       {dot:2,name:"Judo 2",note:"8-10 ans",slots:[{day:"Mardi",time:"17h – 18h",lieu:"Dojo G. Pizzonero"},{day:"Vendredi",time:"17h30 – 18h30",lieu:"Dojo G. Pizzonero"}]},
       {dot:3,name:"Judo 3",note:"10-14 ans",slots:[{day:"Mardi",time:"18h – 19h",lieu:"Dojo G. Pizzonero"},{day:"Vendredi",time:"18h30 – 20h",lieu:"Dojo G. Pizzonero"}]},
-      {dot:3,name:"Judo Adultes",note:"",slots:[{day:"Mardi",time:"20h15 – 22h",lieu:"Dojo G. Pizzonero"},{day:"Vendredi",time:"20h15 – 22h",lieu:"Dojo G. Pizzonero"}]},
-      {dot:1,name:"Judo Handi",note:"",slots:[{day:"Mardi",time:"14h – 15h30",lieu:"Dojo G. Pizzonero"},{day:"Jeudi",time:"11h – 13h",lieu:"Dojo G. Pizzonero"}]}
+      {dot:3,name:"Judo Adultes",note:"",slots:[{day:"Mardi",time:"20h15 – 22h",lieu:"Dojo G. Pizzonero"},{day:"Vendredi",time:"20h15 – 22h",lieu:"Dojo G. Pizzonero"}]}
     ]},
     { discipline:"Karaté", profs:"Omar Amar (DT)", groups:[
       {dot:1,name:"Baby Karaté",note:"4-6 ans",slots:[{day:"Mardi",time:"17h15 – 18h",lieu:"Dojo Solidaire"},{day:"Vendredi",time:"18h – 18h45",lieu:"Dojo Solidaire"}]},
@@ -1074,8 +1073,24 @@ function handlePhotoUpload(input, path){
     return;
   }
   var reader = new FileReader();
-  reader.onload = function(e){
-    setPath(siteData, path, e.target.result);
+  reader.onload = async function(e){
+    setAdminStatus('Envoi de la photo\u2026');
+    try{
+      var res = await fetch(TATAMI_CALENDAR_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({ password: ADMIN_PASSWORD, action: 'uploadPhoto', photoDataUrl: e.target.result })
+      });
+      var result = await res.json();
+      if(result && result.ok){
+        setPath(siteData, path, result.url);
+        setAdminStatus('Photo envoy\u00e9e \u2713 \u2014 pense \u00e0 cliquer sur Enregistrer pour publier les autres changements.');
+      } else {
+        setAdminStatus("\u00c9chec de l'envoi de la photo : " + (result && result.error ? result.error : 'erreur inconnue'));
+      }
+    }catch(err){
+      setAdminStatus("\u00c9chec de l'envoi de la photo \u2014 v\u00e9rifie ta connexion.");
+    }
     renderAll();
   };
   reader.readAsDataURL(file);
