@@ -676,11 +676,11 @@ body.admin-mode{padding-bottom:64px;}
     <div>
       <div id="contact-render"></div>
     </div>
-    <form onsubmit="return false;">
-      <input type="text" placeholder="Nom et prénom">
-      <input type="email" placeholder="Email">
-      <select>
-        <option>Discipline souhaitée</option>
+    <form id="contact-form" onsubmit="submitContactForm(event)">
+      <input type="text" id="cf-nom" placeholder="Nom et prénom" required>
+      <input type="email" id="cf-email" placeholder="Email" required>
+      <select id="cf-discipline">
+        <option value="">Discipline souhaitée</option>
         <option>Aïkibudo</option>
         <option>Judo</option>
         <option>Karaté</option>
@@ -688,8 +688,10 @@ body.admin-mode{padding-bottom:64px;}
         <option>Taïso</option>
         <option>Question générale</option>
       </select>
-      <textarea placeholder="Message (âge de l'enfant, disponibilités...)"></textarea>
-      <button class="btn btn-primary" type="submit">Envoyer la demande</button>
+      <textarea id="cf-message" placeholder="Message (âge de l'enfant, disponibilités...)"></textarea>
+      <input type="text" id="cf-website" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;" aria-hidden="true">
+      <button class="btn btn-primary" type="submit" id="cf-submit-btn">Envoyer la demande</button>
+      <div id="cf-status" style="font-size:0.85rem; margin-top:4px;"></div>
     </form>
   </div>
   <div class="wrap">
@@ -1541,6 +1543,50 @@ function renderContact(){
     html += '<div class="info-row"><span class="info-label">Accueil</span><span>'+esc(c.accueil)+'</span></div>';
   }
   el.innerHTML = html;
+}
+
+async function submitContactForm(e){
+  e.preventDefault();
+  var btn = document.getElementById('cf-submit-btn');
+  var status = document.getElementById('cf-status');
+  var nom = document.getElementById('cf-nom').value.trim();
+  var email = document.getElementById('cf-email').value.trim();
+  var discipline = document.getElementById('cf-discipline').value;
+  var message = document.getElementById('cf-message').value.trim();
+  var website = document.getElementById('cf-website').value; // piège \u00e0 robots, doit rester vide
+
+  if(!nom || !email){
+    status.style.color = 'var(--belt-red)';
+    status.textContent = 'Merci de renseigner ton nom et ton email.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi\u2026';
+  status.style.color = '';
+  status.textContent = '';
+
+  try{
+    var res = await fetch(TATAMI_CALENDAR_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'submitContact', nom:nom, email:email, discipline:discipline, message:message, website:website })
+    });
+    var result = await res.json();
+    if(result && result.ok){
+      status.style.color = 'var(--indigo-deep)';
+      status.textContent = 'Message envoy\u00e9 \u2713 On revient vers toi rapidement.';
+      document.getElementById('contact-form').reset();
+    } else {
+      status.style.color = 'var(--belt-red)';
+      status.textContent = "\u00c9chec de l'envoi : " + (result && result.error ? result.error : 'erreur inconnue');
+    }
+  }catch(err){
+    status.style.color = 'var(--belt-red)';
+    status.textContent = "\u00c9chec de l'envoi \u2014 v\u00e9rifie ta connexion et r\u00e9essaie.";
+  }
+  btn.disabled = false;
+  btn.textContent = 'Envoyer la demande';
 }
 
 function esc(s){
