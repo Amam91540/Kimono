@@ -157,9 +157,10 @@ section{padding:80px 0; position:relative;}
 
 /* ---------- DISCIPLINES ---------- */
 .disciplines{background:var(--rice-soft);}
-.disc-grid{display:flex; flex-wrap:wrap; justify-content:center; gap:1px; background:var(--line); border:1px solid var(--line); position:relative; z-index:1;}
-.disc-card{width:230px; flex:1 1 230px; max-width:260px; background:var(--rice-soft); padding:34px 26px; text-align:center; transition:background .2s ease;}
-@media (max-width:520px){.disc-card{flex-basis:100%;}}
+.disc-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:1px; background:var(--line); border:1px solid var(--line); position:relative; z-index:1;}
+.disc-card{background:var(--rice-soft); padding:34px 20px; text-align:center; transition:background .2s ease;}
+@media (max-width:900px){.disc-grid{grid-template-columns:repeat(2, 1fr);}}
+@media (max-width:520px){.disc-grid{grid-template-columns:1fr;}}
 .disc-card:hover{background:var(--rice);}
 .disc-icon{width:38px; height:38px; margin-bottom:18px; color:var(--brass);}
 .disc-num{font-family:'Shippori Mincho',serif; font-size:0.78rem; color:var(--brass); font-weight:700; margin-bottom:6px; display:block;}
@@ -167,25 +168,22 @@ section{padding:80px 0; position:relative;}
 .disc-card p{font-size:0.9rem; color:#5a5245;}
 
 /* ---------- HORAIRES ---------- */
-.horaires{background:var(--indigo-ink); color:var(--rice-soft);}
-.horaires .sec-head h2{color:var(--rice-soft);}
-.horaires .sec-head p{color:rgba(239,233,220,0.7);}
-.horaires .sec-eyebrow{color:#c9a45c;}
+.horaires{background:var(--rice-soft);}
 .schedule-table{width:100%; border-collapse:collapse; margin-top:8px; position:relative; z-index:1;}
-.schedule-table th{text-align:left; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:rgba(239,233,220,0.55); font-weight:700; padding:0 0 14px; border-bottom:1px solid rgba(239,233,220,0.18);}
-.schedule-table td{padding:20px 0; border-bottom:1px solid rgba(239,233,220,0.1); vertical-align:top;}
+.schedule-table th{text-align:left; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:#8a8172; font-weight:700; padding:0 0 14px; border-bottom:1px solid var(--line);}
+.schedule-table td{padding:20px 0; border-bottom:1px solid var(--line); vertical-align:top;}
 .belt-dot{display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:10px; vertical-align:middle;}
-.dot-1{background:#e8e4d8;} .dot-2{background:#d3a23c;} .dot-3{background:#3a3630;}
-.grp-name{font-weight:700; font-family:'Shippori Mincho',serif; font-size:1.02rem;}
-.grp-note{font-size:0.78rem; color:rgba(239,233,220,0.55); margin-top:4px;}
-.day-pill{display:inline-block; background:rgba(239,233,220,0.08); border:1px solid rgba(239,233,220,0.18); padding:5px 12px; border-radius:20px; font-size:0.78rem; margin:2px 6px 2px 0;}
+.dot-1{background:#e8e4d8; border:1px solid var(--line);} .dot-2{background:#d3a23c;} .dot-3{background:#3a3630;}
+.grp-name{font-weight:700; font-family:'Shippori Mincho',serif; font-size:1.02rem; color:var(--indigo-deep);}
+.grp-note{font-size:0.78rem; color:#8a8172; margin-top:4px;}
+.day-pill{display:inline-block; background:var(--rice); border:1px solid var(--line); padding:5px 12px; border-radius:20px; font-size:0.78rem; margin:2px 6px 2px 0; color:var(--charcoal);}
 .slot-list{display:flex; flex-direction:column; gap:8px;}
 .slot-line{display:flex; align-items:center; flex-wrap:wrap; gap:10px;}
-.slot-line .day-pill{margin:0; min-width:78px; text-align:center; font-weight:700; background:rgba(201,164,92,0.14); border-color:rgba(201,164,92,0.35); color:#c9a45c;}
-.slot-time{font-size:0.9rem;}
-.slot-lieu{font-size:0.72rem; color:rgba(239,233,220,0.5); font-style:italic; margin-left:auto; text-align:right; white-space:nowrap;}
+.slot-line .day-pill{margin:0; min-width:78px; text-align:center; font-weight:700; background:rgba(165,129,58,0.1); border-color:rgba(165,129,58,0.3); color:var(--brass);}
+.slot-time{font-size:0.9rem; color:var(--charcoal);}
+.slot-lieu{font-size:0.72rem; color:#8a8172; font-style:italic; margin-left:auto; text-align:right; white-space:nowrap;}
 .adm-slot-row{display:flex; gap:6px; align-items:center; margin-bottom:6px; flex-wrap:wrap;}
-.horaires-note{margin-top:32px; font-size:0.82rem; color:rgba(239,233,220,0.55); border-left:2px solid var(--brass); padding-left:16px; position:relative; z-index:1;}
+.horaires-note{margin-top:32px; font-size:0.82rem; color:#8a8172; border-left:2px solid var(--brass); padding-left:16px; position:relative; z-index:1;}
 
 /* ---------- TARIFS ---------- */
 .tarifs{background:var(--rice-soft);}
@@ -216,8 +214,8 @@ section{padding:80px 0; position:relative;}
 .horaires-group{position:relative; z-index:1; margin-bottom:44px; padding-top:6px;}
 .horaires-group:first-of-type{padding-top:0;}
 .horaires-group:last-of-type{margin-bottom:0;}
-.horaires-group h3{font-family:'Shippori Mincho',serif; font-weight:700; color:#c9a45c; font-size:1.7rem; letter-spacing:0.02em; margin-bottom:4px; padding-bottom:10px; border-bottom:1px solid rgba(201,164,92,0.3);}
-.horaires-group .horaires-teacher{font-size:0.78rem; color:rgba(239,233,220,0.55); margin:8px 0 16px;}
+.horaires-group h3{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:1.7rem; letter-spacing:0.02em; margin-bottom:4px; padding-bottom:10px; border-bottom:1px solid var(--line);}
+.horaires-group .horaires-teacher{font-size:0.78rem; color:#8a8172; margin:8px 0 16px;}
 
 /* ---------- EQUIPE ---------- */
 .equipe{background:var(--rice-soft); position:relative;}
@@ -295,22 +293,22 @@ section{padding:80px 0; position:relative;}
 .idea-list li b{color:var(--indigo-deep); flex-shrink:0;}
 
 /* ---------- CONTACT ---------- */
-.contact{background:var(--indigo-deep); color:var(--rice-soft);}
+.contact{background:var(--rice-soft);}
 .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px; position:relative; z-index:1;}
 @media (max-width:860px){.contact-grid{grid-template-columns:1fr;}}
 .maps-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:52px; position:relative; z-index:1;}
 @media (max-width:860px){.maps-grid{grid-template-columns:1fr;}}
-.map-block{border-radius:3px; overflow:hidden; border:1px solid rgba(239,233,220,0.18);}
-.map-label{background:var(--indigo-ink); color:rgba(239,233,220,0.85); font-size:0.8rem; font-weight:700; padding:12px 16px;}
+.map-block{border-radius:3px; overflow:hidden; border:1px solid var(--line);}
+.map-label{background:var(--indigo-deep); color:rgba(239,233,220,0.9); font-size:0.8rem; font-weight:700; padding:12px 16px;}
 .map-embed{width:100%; height:260px; border:0; display:block; filter:grayscale(15%) contrast(1.02);}
-.contact h2{color:var(--rice-soft); font-size:2rem; margin-bottom:16px;}
-.contact p{color:rgba(239,233,220,0.75); margin-bottom:28px; max-width:44ch;}
-.info-row{display:flex; gap:14px; padding:14px 0; border-top:1px solid rgba(239,233,220,0.14); font-size:0.9rem;}
+.contact h2{color:var(--indigo-deep); font-size:2rem; margin-bottom:16px;}
+.contact p{color:#5a5245; margin-bottom:28px; max-width:44ch;}
+.info-row{display:flex; gap:14px; padding:14px 0; border-top:1px solid var(--line); font-size:0.9rem; color:var(--charcoal);}
 .info-row:first-of-type{border-top:none;}
 .info-label{width:88px; flex-shrink:0; color:var(--brass); font-weight:700; font-size:0.76rem; text-transform:uppercase; letter-spacing:0.06em; padding-top:2px;}
 form{display:flex; flex-direction:column; gap:14px;}
-input,textarea,select{background:rgba(239,233,220,0.06); border:1px solid rgba(239,233,220,0.25); color:var(--rice-soft); padding:13px 14px; font-family:inherit; font-size:0.9rem; border-radius:2px;}
-input::placeholder, textarea::placeholder{color:rgba(239,233,220,0.4);}
+input,textarea,select{background:#fff; border:1px solid var(--line); color:var(--charcoal); padding:13px 14px; font-family:inherit; font-size:0.9rem; border-radius:2px;}
+input::placeholder, textarea::placeholder{color:#a8a196;}
 textarea{resize:vertical; min-height:90px;}
 form .btn-primary{margin-top:6px; align-self:flex-start;}
 
@@ -324,7 +322,7 @@ footer{background:var(--indigo-ink); color:rgba(239,233,220,0.5); text-align:cen
 .social-icon svg{width:18px; height:18px;}
 .social-icon:hover{border-color:#c9a45c; color:#c9a45c;}
 .contact-social{display:flex; gap:10px;}
-.social-icon.small{width:32px; height:32px; border-color:rgba(239,233,220,0.3); color:rgba(239,233,220,0.8);}
+.social-icon.small{width:32px; height:32px; border-color:var(--line); color:var(--indigo-deep);}
 .social-icon.small svg{width:15px; height:15px;}
 
 /* ---------- OVERVIEW LINKS (home page) ---------- */
@@ -377,7 +375,7 @@ body.admin-mode{padding-bottom:64px;}
   width:100%; padding:8px 10px; border:1px solid var(--brass); border-radius:2px; font-family:inherit;
   font-size:0.85rem; background:rgba(165,129,58,0.06); color:inherit;
 }
-.horaires .adm-input{background:rgba(239,233,220,0.08); border-color:rgba(239,233,220,0.35); color:var(--rice-soft);}
+.horaires .adm-input{background:rgba(165,129,58,0.06); border-color:var(--brass); color:var(--charcoal);}
 .adm-row-tools{display:flex; gap:6px; align-items:center;}
 .adm-del-btn{
   background:transparent; border:1px solid var(--belt-red); color:var(--belt-red); border-radius:2px;
@@ -387,7 +385,6 @@ body.admin-mode{padding-bottom:64px;}
   margin-top:10px; background:transparent; border:1.5px dashed var(--brass); color:var(--brass);
   padding:9px 16px; border-radius:2px; font-weight:700; font-size:0.8rem; cursor:pointer; font-family:inherit;
 }
-.horaires .adm-add-btn{color:#c9a45c; border-color:#c9a45c;}
 .adm-add-btn.small{margin-top:0; padding:6px 12px; font-size:0.74rem;}
 
 .page-view { animation: fadeIn .35s ease; }
