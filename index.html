@@ -1674,7 +1674,7 @@ function renderFeesTablesHtml(filterDiscipline){
     return '<p class="fees-status">Chargement des tarifs\u2026</p>';
   }
   var fees = tatamiFees;
-  var disciplines = filterDiscipline ? [filterDiscipline] : fees.disciplines;
+  var disciplines = filterDiscipline ? [filterDiscipline] : fees.disciplines.slice().sort(function(a,b){ return a.localeCompare(b, 'fr'); });
   var html = '';
   disciplines.forEach(function(disc){
     if(fees.disciplines.indexOf(disc) === -1) return;
@@ -1684,38 +1684,25 @@ function renderFeesTablesHtml(filterDiscipline){
     var exterieurs = (fees.locations.exterieurs || {});
     html += '<div class="fees-disc-block">';
     if(!filterDiscipline) html += '<h3 class="fees-disc-title">'+esc(disc)+'</h3>';
-    html += '<table class="price-table"><thead><tr><th></th>';
-    tiers.forEach(function(t){ html += '<th>'+esc(t)+'</th>'; });
-    html += '</tr></thead><tbody>';
+    html += '<table class="price-table"><thead><tr><th>Cat\u00e9gorie</th><th>Menne\u00e7ois</th><th>Ext\u00e9rieurs</th></tr></thead><tbody>';
     (fees.familyRanks||[]).forEach(function(rankPair){
       var rankCode = rankPair[0], rankLabel = rankPair[1];
-      var rowHasData = tiers.some(function(t){
-        var g = mennecois.grid && mennecois.grid[rankCode] && mennecois.grid[rankCode][t];
-        return g && g[disc] !== undefined;
-      });
-      if(!rowHasData) return;
-      html += '<tr><td>'+esc(rankLabel)+'</td>';
       tiers.forEach(function(t){
         var mGrid = mennecois.grid && mennecois.grid[rankCode] && mennecois.grid[rankCode][t];
         var eGrid = exterieurs.grid && exterieurs.grid[rankCode] && exterieurs.grid[rankCode][t];
         var mAmt = mGrid ? mGrid[disc] : undefined;
         var eAmt = eGrid ? eGrid[disc] : undefined;
-        if(mAmt===undefined && eAmt===undefined){
-          html += '<td class="price">\u2014</td>';
-        } else {
-          html += '<td class="price">'+(mAmt!==undefined?mAmt+'\u20ac':'\u2014')+' <span class="fees-ext">/ '+(eAmt!==undefined?eAmt+'\u20ac':'\u2014')+'</span></td>';
-        }
+        if(mAmt===undefined && eAmt===undefined) return;
+        var catLabel = tiers.length > 1 ? (t+' \u2014 '+rankLabel) : rankLabel;
+        html += '<tr><td>'+esc(catLabel)+'</td><td class="price">'+(mAmt!==undefined?mAmt+'\u20ac':'\u2014')+'</td><td class="price">'+(eAmt!==undefined?eAmt+'\u20ac':'\u2014')+'</td></tr>';
       });
-      html += '</tr>';
     });
     html += '</tbody></table>';
     var lic = mennecois.licenseOnly ? mennecois.licenseOnly[disc] : undefined;
-    var licExt = exterieurs.licenseOnly ? exterieurs.licenseOnly[disc] : undefined;
     var adh = mennecois.adhesionOnly ? mennecois.adhesionOnly[disc] : undefined;
-    var adhExt = exterieurs.adhesionOnly ? exterieurs.adhesionOnly[disc] : undefined;
     var extras = [];
-    if(lic!==undefined || licExt!==undefined) extras.push('Licence seule : '+(lic!==undefined?lic+'\u20ac':'\u2014')+' (Menne\u00e7ois) / '+(licExt!==undefined?licExt+'\u20ac':'\u2014')+' (Ext\u00e9rieurs)');
-    if(adh!==undefined || adhExt!==undefined) extras.push('Adh\u00e9sion seule : '+(adh!==undefined?adh+'\u20ac':'\u2014')+' (Menne\u00e7ois) / '+(adhExt!==undefined?adhExt+'\u20ac':'\u2014')+' (Ext\u00e9rieurs)');
+    if(lic!==undefined) extras.push('Licence seule : '+lic+'\u20ac');
+    if(adh!==undefined) extras.push('Adh\u00e9sion seule : '+adh+'\u20ac');
     if(extras.length) html += '<p class="fees-extra">'+extras.join('<br>')+'</p>';
     html += '</div>';
   });
