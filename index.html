@@ -234,6 +234,13 @@ section{padding:80px 0; position:relative;}
 .tarif-block h3{font-family:'Shippori Mincho',serif; font-weight:700; color:var(--indigo-deep); font-size:1.2rem; margin-bottom:4px;}
 .tarif-block .tarif-teacher{font-size:0.8rem; color:var(--brass); margin-bottom:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;}
 .price-table{width:100%; border-collapse:collapse;}
+.fees-legend{font-size:0.86rem; color:#8a8172; margin-bottom:28px; max-width:60ch;}
+.fees-disc-block{margin-bottom:36px;}
+.fees-disc-title{font-family:'Shippori Mincho',serif; color:var(--indigo-deep); font-size:1.15rem; margin-bottom:10px;}
+.fees-ext{color:#8a8172; font-size:0.82em;}
+.fees-extra{font-size:0.82rem; color:#5a5245; margin-top:10px; line-height:1.6;}
+.fees-footnote{font-size:0.76rem; color:#8a8172; margin-top:24px; font-style:italic; border-top:1px solid var(--line); padding-top:14px;}
+.fees-status{color:#8a8172; font-style:italic;}
 .price-table th{text-align:left; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#8a8172; font-weight:700; padding:0 14px 10px 0; border-bottom:1px solid var(--line);}
 .price-table td{padding:11px 14px 11px 0; border-bottom:1px solid var(--line); font-size:0.88rem; color:var(--charcoal); vertical-align:top;}
 .price-table td:last-child, .price-table th:last-child{padding-right:0;}
@@ -1149,41 +1156,9 @@ function addDiscipline(){
 function renderTarifs(){
   var el = document.getElementById('tarifs-render');
   if(!el) return;
-  var html = '';
-  siteData.tarifs.forEach(function(disc, di){
-    html += '<div class="tarif-block">';
-    if(isAdmin){
-      html += '<div class="adm-row-tools" style="margin-bottom:10px;">' +
-        '<input class="adm-input" style="font-family:\'Shippori Mincho\',serif;font-weight:700;font-size:1.1rem;max-width:240px;" data-path="tarifs.'+di+'.discipline" value="'+esc(disc.discipline)+'" oninput="updateField(this)">' +
-        '<button class="adm-del-btn" onclick="removeItem(\'tarifs\','+di+')" title="Supprimer">\u2715</button>' +
-      '</div>';
-    } else {
-      html += '<h3>'+esc(disc.discipline)+'</h3>';
-    }
-    html += '<table class="price-table"><thead><tr><th>Cat\u00e9gorie</th><th>Menne\u00e7ois</th><th>Ext\u00e9rieurs</th>'+(isAdmin?'<th></th>':'')+'</tr></thead><tbody>';
-    disc.rows.forEach(function(r, ri){
-      if(isAdmin){
-        html += '<tr>' +
-          '<td><input class="adm-input" data-path="tarifs.'+di+'.rows.'+ri+'.cat" value="'+esc(r.cat)+'" oninput="updateField(this)"></td>' +
-          '<td><input class="adm-input" style="max-width:90px;" data-path="tarifs.'+di+'.rows.'+ri+'.mennecois" value="'+esc(r.mennecois)+'" oninput="updateField(this)"></td>' +
-          '<td><input class="adm-input" style="max-width:90px;" data-path="tarifs.'+di+'.rows.'+ri+'.exterieurs" value="'+esc(r.exterieurs)+'" oninput="updateField(this)"></td>' +
-          '<td><button class="adm-del-btn" onclick="removeItem(\'tarifs.'+di+'.rows\','+ri+')">\u2715</button></td>' +
-        '</tr>';
-      } else {
-        html += '<tr><td>'+esc(r.cat)+'</td><td class="price">'+esc(r.mennecois)+'</td><td class="price">'+esc(r.exterieurs)+'</td></tr>';
-      }
-    });
-    html += '</tbody></table>';
-    if(isAdmin){
-      html += '<button class="adm-add-btn small" onclick="addTarifRow('+di+')" type="button">+ Ajouter une cat\u00e9gorie</button>';
-    }
-    html += '</div>';
-  });
+  var html = '<p class="fees-legend">Tarifs annuels \u2014 <b>Menne\u00e7ois</b> / <b>Ext\u00e9rieurs</b>. Ces tarifs sont synchronis\u00e9s automatiquement depuis Tatami.</p>';
+  html += renderFeesTablesHtml(null);
   el.innerHTML = html;
-}
-function addTarifRow(di){
-  siteData.tarifs[di].rows.push({cat:'Nouvelle cat\u00e9gorie',mennecois:'0 €',exterieurs:'0 €'});
-  renderAll();
 }
 
 /* ---------------- PAGE D\u00c9TAIL D'UNE DISCIPLINE ---------------- */
@@ -1297,17 +1272,11 @@ function renderDisciplineDetail(){
     html += '<a href="#horaires" onclick="showPage(\'horaires\');return false;" class="hero-link" style="color:var(--belt-red);display:inline-block;margin-top:10px;">Voir tous les horaires \u2192</a></div>';
   }
 
-  // Tarifs spécifiques
-  var discTarifs = siteData.tarifs.filter(function(t){ return t.discipline === key; });
-  if(discTarifs.length && !isAdmin){
-    html += '<div class="dd-section"><h3>Tarifs</h3><table class="price-table">' +
-      '<thead><tr><th>Cat\u00e9gorie</th><th>Menne\u00e7ois</th><th>Ext\u00e9rieurs</th></tr></thead><tbody>';
-    discTarifs.forEach(function(t){
-      t.rows.forEach(function(r){
-        html += '<tr><td>'+esc(r.cat)+'</td><td class="price">'+esc(r.mennecois)+'</td><td class="price">'+esc(r.exterieurs)+'</td></tr>';
-      });
-    });
-    html += '</tbody></table></div>';
+  // Tarifs spécifiques (synchronisés depuis Tatami)
+  var tatamiDiscKey = DISCIPLINE_TATAMI_MAP[key];
+  if(!isAdmin && tatamiDiscKey && tatamiFeesStatus === 'ok' && tatamiFees && tatamiFees.applicableTiers[tatamiDiscKey]){
+    html += '<div class="dd-section"><h3>Tarifs</h3>' + renderFeesTablesHtml(tatamiDiscKey) +
+      '<a href="#tarifs" onclick="showPage(\'tarifs\');return false;" class="hero-link" style="color:var(--belt-red);display:inline-block;margin-top:6px;">Voir tous les tarifs \u2192</a></div>';
   }
 
   // Enseignants de cette discipline
@@ -1559,10 +1528,14 @@ function confirmPhotoEditor(){
 
 var TATAMI_CALENDAR_URL = 'https://script.google.com/macros/s/AKfycbyiFTFDEkclqoL8XFY0P_8Dnn4PREFq483qIRwQJ5f-_shw9A6fWRdY8eNcOaL649vLeA/exec';
 var TATAMI_RESULTS_URL = TATAMI_CALENDAR_URL + '?type=resultats';
+var TATAMI_TARIFS_URL = TATAMI_CALENDAR_URL + '?type=tarifs';
 var tatamiEvents = null;
 var tatamiStatus = 'loading'; // loading | ok | error
 var tatamiResults = null;
 var tatamiResultsStatus = 'loading'; // loading | ok | error
+var tatamiFees = null;
+var tatamiFeesStatus = 'loading'; // loading | ok | error
+var DISCIPLINE_TATAMI_MAP = {"Aïkibudo":"AIKIBUDO","Judo":"JUDO","Karaté":"KARATE","Kobudo":"KOBUDO","Taïso":"TAISO"};
 
 async function loadTatamiCalendar(){
   try{
@@ -1677,6 +1650,77 @@ async function loadTatamiResults(){
   }
   renderVie();
   renderHomeLatestArticle();
+}
+
+async function loadTatamiFees(){
+  try{
+    var res = await fetch(TATAMI_TARIFS_URL);
+    var data = await res.json();
+    if(!data || data.error || !data.disciplines) throw new Error(data && data.error || 'format inattendu');
+    tatamiFees = data;
+    tatamiFeesStatus = 'ok';
+  }catch(e){
+    tatamiFeesStatus = 'error';
+  }
+  renderTarifs();
+  if(currentDisciplineId) renderDisciplineDetail();
+}
+
+function renderFeesTablesHtml(filterDiscipline){
+  if(tatamiFeesStatus === 'error'){
+    return '<p class="fees-status">Tarifs momentan\u00e9ment indisponibles.</p>';
+  }
+  if(tatamiFeesStatus !== 'ok' || !tatamiFees){
+    return '<p class="fees-status">Chargement des tarifs\u2026</p>';
+  }
+  var fees = tatamiFees;
+  var disciplines = filterDiscipline ? [filterDiscipline] : fees.disciplines;
+  var html = '';
+  disciplines.forEach(function(disc){
+    if(fees.disciplines.indexOf(disc) === -1) return;
+    var tiers = fees.applicableTiers[disc] || [];
+    if(!tiers.length) return;
+    var mennecois = (fees.locations.mennecois || {});
+    var exterieurs = (fees.locations.exterieurs || {});
+    html += '<div class="fees-disc-block">';
+    if(!filterDiscipline) html += '<h3 class="fees-disc-title">'+esc(disc)+'</h3>';
+    html += '<table class="price-table"><thead><tr><th></th>';
+    tiers.forEach(function(t){ html += '<th>'+esc(t)+'</th>'; });
+    html += '</tr></thead><tbody>';
+    (fees.familyRanks||[]).forEach(function(rankPair){
+      var rankCode = rankPair[0], rankLabel = rankPair[1];
+      var rowHasData = tiers.some(function(t){
+        var g = mennecois.grid && mennecois.grid[rankCode] && mennecois.grid[rankCode][t];
+        return g && g[disc] !== undefined;
+      });
+      if(!rowHasData) return;
+      html += '<tr><td>'+esc(rankLabel)+'</td>';
+      tiers.forEach(function(t){
+        var mGrid = mennecois.grid && mennecois.grid[rankCode] && mennecois.grid[rankCode][t];
+        var eGrid = exterieurs.grid && exterieurs.grid[rankCode] && exterieurs.grid[rankCode][t];
+        var mAmt = mGrid ? mGrid[disc] : undefined;
+        var eAmt = eGrid ? eGrid[disc] : undefined;
+        if(mAmt===undefined && eAmt===undefined){
+          html += '<td class="price">\u2014</td>';
+        } else {
+          html += '<td class="price">'+(mAmt!==undefined?mAmt+'\u20ac':'\u2014')+' <span class="fees-ext">/ '+(eAmt!==undefined?eAmt+'\u20ac':'\u2014')+'</span></td>';
+        }
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    var lic = mennecois.licenseOnly ? mennecois.licenseOnly[disc] : undefined;
+    var licExt = exterieurs.licenseOnly ? exterieurs.licenseOnly[disc] : undefined;
+    var adh = mennecois.adhesionOnly ? mennecois.adhesionOnly[disc] : undefined;
+    var adhExt = exterieurs.adhesionOnly ? exterieurs.adhesionOnly[disc] : undefined;
+    var extras = [];
+    if(lic!==undefined || licExt!==undefined) extras.push('Licence seule : '+(lic!==undefined?lic+'\u20ac':'\u2014')+' (Menne\u00e7ois) / '+(licExt!==undefined?licExt+'\u20ac':'\u2014')+' (Ext\u00e9rieurs)');
+    if(adh!==undefined || adhExt!==undefined) extras.push('Adh\u00e9sion seule : '+(adh!==undefined?adh+'\u20ac':'\u2014')+' (Menne\u00e7ois) / '+(adhExt!==undefined?adhExt+'\u20ac':'\u2014')+' (Ext\u00e9rieurs)');
+    if(extras.length) html += '<p class="fees-extra">'+extras.join('<br>')+'</p>';
+    html += '</div>';
+  });
+  if(fees.footnote) html += '<p class="fees-footnote">'+esc(fees.footnote)+'</p>';
+  return html;
 }
 
 function parseJsonArrayField(v){
@@ -2132,7 +2176,7 @@ function esc(s){
 }
 
 window.addEventListener('DOMContentLoaded', function(){
-  loadSiteData(); loadTatamiCalendar(); loadTatamiResults();
+  loadSiteData(); loadTatamiCalendar(); loadTatamiResults(); loadTatamiFees();
 
   var vp = document.getElementById('photo-editor-viewport');
   if(vp){
