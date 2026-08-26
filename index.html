@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1709,7 +1708,7 @@ function renderFeesTablesHtml(filterDiscipline){
         var mAmt = mGrid ? mGrid[disc] : undefined;
         var eAmt = eGrid ? eGrid[disc] : undefined;
         if(mAmt===undefined && eAmt===undefined) return;
-        var catLabel = tiers.length > 1 ? t : rankLabel;
+        var catLabel = t;
         html += '<tr><td>'+esc(catLabel)+'</td><td class="price">'+(mAmt!==undefined?mAmt+'\u20ac':'\u2014')+'</td><td class="price">'+(eAmt!==undefined?eAmt+'\u20ac':'\u2014')+'</td></tr>';
       });
     });
