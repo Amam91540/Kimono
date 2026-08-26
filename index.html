@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -169,6 +170,7 @@ section{padding:80px 0; position:relative;}
 @media (max-width:760px){.dd-intro-row{grid-template-columns:1fr;}}
 .dd-logo{text-align:center;}
 .dd-logo img{max-width:280px; width:100%; height:auto; margin:0 auto; display:block;}
+.dd-fed-link{display:inline-block; margin-top:10px; font-size:0.8rem; font-weight:700; color:var(--belt-red);}
 .dd-intro{max-width:60ch;}
 .dd-intro p{font-size:1.05rem; color:var(--charcoal); line-height:1.8;}
 .dd-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; margin-bottom:36px;}
@@ -1156,7 +1158,7 @@ function addDiscipline(){
 function renderTarifs(){
   var el = document.getElementById('tarifs-render');
   if(!el) return;
-  var html = '<p class="fees-legend">Tarifs annuels \u2014 <b>Menne\u00e7ois</b> / <b>Ext\u00e9rieurs</b>. Ces tarifs sont synchronis\u00e9s automatiquement depuis Tatami.</p>';
+  var html = '<p class="fees-legend">Tarifs annuels \u2014 <b>Menne\u00e7ois</b> / <b>Ext\u00e9rieurs</b>. Les tarifs sont d\u00e9gressifs \u00e0 partir du 2\u00e8me membre de la m\u00eame famille (nous contacter pour le d\u00e9tail).</p>';
   html += renderFeesTablesHtml(null);
   el.innerHTML = html;
 }
@@ -1221,14 +1223,21 @@ function renderDisciplineDetail(){
     html += '</div><button class="adm-add-btn small" style="margin-top:8px;" onclick="addDisciplinePhoto(\''+key+'\')" type="button">+ Ajouter une photo</button></div>';
   } else {
     var hasLogo = !!DISCIPLINE_LOGOS[key];
-    html += '<div class="dd-intro-row'+(hasLogo?'':' no-logo')+'">';
+    var hasRightCol = hasLogo || !!DISCIPLINE_FEDERATIONS[key];
+    html += '<div class="dd-intro-row'+(hasRightCol?'':' no-logo')+'">';
     html += '<div class="dd-intro">';
     if(d.intro){
       html += '<p>'+esc(d.intro).replace(/\n/g,'<br>')+'</p>';
     }
     html += '</div>';
     if(hasLogo){
-      html += '<div class="dd-logo"><img src="'+DISCIPLINE_LOGOS[key]+'" alt="Logo '+esc(key)+'"></div>';
+      html += '<div class="dd-logo"><img src="'+DISCIPLINE_LOGOS[key]+'" alt="Logo '+esc(key)+'">';
+      if(DISCIPLINE_FEDERATIONS[key]){
+        html += '<a href="'+esc(DISCIPLINE_FEDERATIONS[key].url)+'" target="_blank" rel="noopener" class="dd-fed-link">'+esc(DISCIPLINE_FEDERATIONS[key].label)+' \u2197</a>';
+      }
+      html += '</div>';
+    } else if(DISCIPLINE_FEDERATIONS[key]){
+      html += '<div class="dd-logo"><a href="'+esc(DISCIPLINE_FEDERATIONS[key].url)+'" target="_blank" rel="noopener" class="dd-fed-link">F\u00e9d\u00e9ration officielle : '+esc(DISCIPLINE_FEDERATIONS[key].label)+' \u2197</a></div>';
     }
     html += '</div>';
     var DD_ICONS = {
@@ -1536,6 +1545,12 @@ var tatamiResultsStatus = 'loading'; // loading | ok | error
 var tatamiFees = null;
 var tatamiFeesStatus = 'loading'; // loading | ok | error
 var DISCIPLINE_TATAMI_MAP = {"Aïkibudo":"AIKIBUDO","Judo":"JUDO","Karaté":"KARATE","Kobudo":"KOBUDO","Taïso":"TAISO"};
+var DISCIPLINE_FEDERATIONS = {
+  "Aïkibudo": {label:"F.F.A.A.A.", url:"https://www.aikido.com.fr"},
+  "Judo": {label:"F.F.J.D.A.", url:"https://www.ffjudo.com"},
+  "Karaté": {label:"F.F.K.D.A.", url:"https://www.ffkarate.fr"},
+  "Kobudo": {label:"F.K.S.R.", url:"http://www.fksr.fr"}
+};
 
 async function loadTatamiCalendar(){
   try{
@@ -1685,7 +1700,8 @@ function renderFeesTablesHtml(filterDiscipline){
     html += '<div class="fees-disc-block">';
     if(!filterDiscipline) html += '<h3 class="fees-disc-title">'+esc(disc)+'</h3>';
     html += '<table class="price-table"><thead><tr><th>Cat\u00e9gorie</th><th>Menne\u00e7ois</th><th>Ext\u00e9rieurs</th></tr></thead><tbody>';
-    (fees.familyRanks||[]).forEach(function(rankPair){
+    var baseRank = (fees.familyRanks && fees.familyRanks[0]) ? [fees.familyRanks[0]] : [];
+    baseRank.forEach(function(rankPair){
       var rankCode = rankPair[0], rankLabel = rankPair[1];
       tiers.forEach(function(t){
         var mGrid = mennecois.grid && mennecois.grid[rankCode] && mennecois.grid[rankCode][t];
@@ -1693,7 +1709,7 @@ function renderFeesTablesHtml(filterDiscipline){
         var mAmt = mGrid ? mGrid[disc] : undefined;
         var eAmt = eGrid ? eGrid[disc] : undefined;
         if(mAmt===undefined && eAmt===undefined) return;
-        var catLabel = tiers.length > 1 ? (t+' \u2014 '+rankLabel) : rankLabel;
+        var catLabel = tiers.length > 1 ? t : rankLabel;
         html += '<tr><td>'+esc(catLabel)+'</td><td class="price">'+(mAmt!==undefined?mAmt+'\u20ac':'\u2014')+'</td><td class="price">'+(eAmt!==undefined?eAmt+'\u20ac':'\u2014')+'</td></tr>';
       });
     });
