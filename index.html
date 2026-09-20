@@ -113,9 +113,30 @@ nav.menu ul li a.active::after{right:0;}
   background:var(--belt-red); color:var(--rice-soft); padding:10px 18px;
   font-weight:700; font-size:0.8rem; border-radius:2px; flex-shrink:0;
 }
+.nav-hamburger{display:none;}
 @media (max-width:760px){
-  .nav{padding:14px 20px;}
+  .nav{padding:14px 20px; position:relative;}
   .brand-sub{display:none;}
+  .nav-hamburger{
+    display:flex; flex-direction:column; justify-content:center; align-items:stretch; gap:5px;
+    width:34px; height:34px; border:none; background:none; cursor:pointer; padding:0; flex-shrink:0; order:2;
+  }
+  .nav-hamburger span{display:block; width:100%; height:2px; background:var(--indigo-deep); border-radius:2px; transition:transform .2s ease, opacity .2s ease;}
+  .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-hamburger.open span:nth-child(2){opacity:0;}
+  .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  nav.menu{
+    display:none; overflow:visible; order:5; width:100%;
+    position:absolute; top:100%; left:0; right:0;
+    background:var(--rice); border-bottom:1px solid var(--line);
+    box-shadow:0 12px 24px rgba(0,0,0,0.1);
+  }
+  nav.menu.mobile-open{display:block;}
+  nav.menu ul{flex-direction:column; gap:0; white-space:normal; padding:6px 20px 18px;}
+  nav.menu ul li{width:100%;}
+  nav.menu ul li a{display:block; padding:13px 0; border-bottom:1px solid var(--line);}
+  nav.menu ul li a::after{display:none;}
+  .nav-cta{order:3;}
 }
 
 /* ---------- PAGE HERO (small, per-page) ---------- */
@@ -537,6 +558,9 @@ body.admin-mode{padding-bottom:64px;}
         <div class="brand-sub">Académie Menneçoise d'Arts Martiaux</div>
       </div>
     </a>
+    <button class="nav-hamburger" id="nav-hamburger-btn" onclick="toggleMobileNav()" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
     <nav class="menu"><ul>
       <li><a href="#index" class="nav-link active" data-page="index" onclick="showPage('index');return false;">Accueil</a></li>
 <li><a href="#disciplines" class="nav-link" data-page="disciplines" onclick="showPage('disciplines');return false;">Disciplines</a></li>
@@ -873,6 +897,22 @@ function showPage(id) {
   });
   window.scrollTo({top: 0, behavior: 'instant'});
   history.replaceState(null, '', '#' + id);
+  closeMobileNav();
+}
+
+function toggleMobileNav() {
+  var menu = document.querySelector('nav.menu');
+  var btn = document.getElementById('nav-hamburger-btn');
+  if (!menu) return;
+  var open = menu.classList.toggle('mobile-open');
+  if (btn) { btn.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+}
+
+function closeMobileNav() {
+  var menu = document.querySelector('nav.menu');
+  var btn = document.getElementById('nav-hamburger-btn');
+  if (menu) menu.classList.remove('mobile-open');
+  if (btn) { btn.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
 }
 // handle direct hash on load
 window.addEventListener('DOMContentLoaded', function() {
