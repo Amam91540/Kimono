@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amam91540.github.io/Kimono/sitemap.xml
