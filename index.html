@@ -474,6 +474,14 @@ footer{background:var(--indigo-ink); color:rgba(239,233,220,0.5); text-align:cen
   font-family:inherit;
 }
 .admin-toggle-btn.is-admin{background:var(--belt-red); border-color:var(--belt-red); color:#fff;}
+.admin-zone{margin-top:12px; display:flex; justify-content:center;}
+.admin-zone .admin-toggle-btn{
+  background:transparent; border:none; color:rgba(239,233,220,0.28); padding:4px 6px;
+  font-size:0.66rem; font-weight:400; text-decoration:underline; text-underline-offset:3px; letter-spacing:0.02em;
+}
+.admin-zone .admin-toggle-btn:hover{color:rgba(239,233,220,0.55);}
+.admin-zone .admin-toggle-btn.is-admin{background:transparent; border:none; color:var(--belt-red); font-weight:700;}
+.admin-zone .admin-login-inline{margin-left:8px;}
 .admin-login-inline{
   display:none; align-items:center; gap:6px; margin-left:8px;
 }
@@ -570,13 +578,6 @@ body.admin-mode{padding-bottom:64px;}
 <li><a href="#vie" class="nav-link" data-page="vie" onclick="showPage('vie');return false;">Vie du club</a></li>
 <li><a href="#contact" class="nav-link" data-page="contact" onclick="showPage('contact');return false;">Contact</a></li>
     </ul></nav>
-    <button id="admin-toggle-btn" class="admin-toggle-btn" onclick="openAdminLogin()" type="button">🔒 Admin</button>
-    <span class="admin-login-inline" id="admin-login-inline">
-      <input type="text" id="admin-pass-input" placeholder="Mot de passe" autocomplete="off">
-      <button class="btn-confirm" onclick="submitAdminLogin()" type="button">OK</button>
-      <button class="btn-cancel" onclick="closeAdminLogin()" type="button">✕</button>
-      <span class="admin-error-inline" id="admin-error-msg">Mot de passe incorrect.</span>
-    </span>
   </div>
 </header>
 
@@ -886,6 +887,15 @@ body.admin-mode{padding-bottom:64px;}
     </a>
   </div>
   Maquette non contractuelle — AMAM · Académie Menneçoise d'Arts Martiaux
+  <div class="admin-zone">
+    <button id="admin-toggle-btn" class="admin-toggle-btn" onclick="openAdminLogin()" type="button">Admin</button>
+    <span class="admin-login-inline" id="admin-login-inline">
+      <input type="text" id="admin-pass-input" placeholder="Mot de passe" autocomplete="off">
+      <button class="btn-confirm" onclick="submitAdminLogin()" type="button">OK</button>
+      <button class="btn-cancel" onclick="closeAdminLogin()" type="button">✕</button>
+      <span class="admin-error-inline" id="admin-error-msg">Mot de passe incorrect.</span>
+    </span>
+  </div>
 </footer>
 
 <script>
