@@ -541,6 +541,9 @@ body.admin-mode{padding-bottom:64px;}
   font-size:0.85rem; background:rgba(165,129,58,0.06); color:inherit;
 }
 .horaires .adm-input{background:rgba(165,129,58,0.06); border-color:var(--brass); color:var(--charcoal);}
+.adm-text-edit{text-align:left;}
+.adm-text-edit .adm-input{color:var(--charcoal); margin-bottom:8px; display:block; background:rgba(255,255,255,0.92);}
+.adm-text-edit .adm-input:last-child{margin-bottom:0;}
 .adm-row-tools{display:flex; gap:6px; align-items:center;}
 .adm-del-btn{
   background:transparent; border:1px solid var(--belt-red); color:var(--belt-red); border-radius:2px;
@@ -590,19 +593,8 @@ body.admin-mode{padding-bottom:64px;}
   </svg>
 </div>
   <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow">Aïkibudo · Judo · Karaté · Kobudo · Taïso</span>
-      <h1>La rigueur du <em>tatami</em>,<br>l'esprit d'un club.</h1>
-      <p>L'Académie Menneçoise d'Arts Martiaux forme ses licenciés, enfants comme adultes, dans cinq disciplines traditionnelles — avec un seul état d'esprit : progresser ensemble.</p>
-      <a href="#disciplines" onclick="showPage('disciplines');return false;" class="hero-link">Découvrir les disciplines →</a>
-    </div>
-    <div class="hero-card">
-      <div class="disp">Le club en chiffres</div>
-      <div class="stat-row"><span class="stat-num">380+</span><span class="stat-label">licenciés, toutes sections confondues</span></div>
-      <div class="stat-row"><span class="stat-num">5</span><span class="stat-label">disciplines enseignées à Mennecy</span></div>
-      <div class="stat-row"><span class="stat-num">10</span><span class="stat-label">enseignants diplômés</span></div>
-      <div class="stat-row"><span class="stat-num">2</span><span class="stat-label">dojos à Mennecy</span></div>
-    </div>
+    <div id="home-hero-text"></div>
+    <div class="hero-card" id="home-hero-stats"></div>
   </div>
 </section>
 <div class="seigaiha-strip light"></div>
@@ -616,12 +608,7 @@ body.admin-mode{padding-bottom:64px;}
 
 <section>
   <div class="wrap">
-    <div class="sec-head">
-      <span class="sec-eyebrow">Explorer</span>
-      <span class="brush-rule"><svg width="90" height="10" viewBox="0 0 90 10"><path d="M2,6 C20,2 30,9 45,5 C60,1 70,8 88,4" stroke="var(--belt-red)" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></span>
-      <h2>Tout le club, en un seul site</h2>
-      <p>Disciplines, horaires, tarifs, équipe et vie du club.</p>
-    </div>
+    <div class="sec-head" id="home-explore-head"></div>
     <div class="overview-grid">
       <a href="#disciplines" onclick="showPage('disciplines');return false;" class="overview-card">
         <div class="ov-kanji">武</div>
@@ -659,11 +646,7 @@ body.admin-mode{padding-bottom:64px;}
     <path d="M100,22 A78,78 0 1,1 58,28" stroke="#c9a45c" stroke-width="10" stroke-linecap="round" opacity="0.14"/>
   </svg>
 </div>
-  <div class="wrap">
-    <span class="page-eyebrow">Nos enseignements</span>
-    <h1>Cinq disciplines,<br>une même exigence</h1>
-    <p>Chaque section est encadrée par des enseignants diplômés, avec une pédagogie adaptée à chaque âge et à chaque niveau.</p>
-  </div>
+  <div class="wrap" id="hero-disciplinesList"></div>
 </section>
 <div class="seigaiha-strip"></div>
 
@@ -675,35 +658,35 @@ body.admin-mode{padding-bottom:64px;}
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6a14 14 0 1 0 12 21"/><path d="M20 14a6 6 0 1 1 -5 9.5"/></svg>
         <span class="disc-num">一 · Aïkibudo</span>
         <h3>Aïkibudo</h3>
-        <p>Un art martial de défense fondé sur les déplacements, les clés et les projections. Pas de compétition : la progression se mesure au geste juste.</p>
+        <p id="disc-card-text-aikibudo"></p>
         <span class="disc-more">En savoir plus →</span>
       </div>
       <div class="disc-card" onclick="openDisciplineDetail('Judo')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="7" width="26" height="26" rx="2"/><line x1="20" y1="7" x2="20" y2="33"/><line x1="7" y1="20" x2="33" y2="20"/></svg>
         <span class="disc-num">二 · Judo</span>
         <h3>Judo</h3>
-        <p>La voie de la souplesse : chutes, projections et travail au sol, pour les enfants comme pour les adultes. Discipline olympique fondée sur le respect et le contrôle.</p>
+        <p id="disc-card-text-judo"></p>
         <span class="disc-more">En savoir plus →</span>
       </div>
       <div class="disc-card" onclick="openDisciplineDetail('Karaté')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M14 9c-2 0-4 2-4 4v3c-3 0-5 2-5 5v3c0 4 3 7 7 7h12c4 0 7-3 7-7V13c0-2-2-4-4-4s-4 2-4 4"/><path d="M14 9v6M18 8v7M22 8v7"/></svg>
         <span class="disc-num">三 · Karaté</span>
         <h3>Karaté</h3>
-        <p>Percussion, kata et self-défense — un travail technique exigeant, du débutant à la ceinture noire, avec ou sans esprit de compétition.</p>
+        <p id="disc-card-text-karate"></p>
         <span class="disc-more">En savoir plus →</span>
       </div>
       <div class="disc-card" onclick="openDisciplineDetail('Kobudo')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="31" x2="31" y2="9"/><line x1="6" y1="34" x2="12" y2="28"/><line x1="28" y1="12" x2="34" y2="6"/></svg>
         <span class="disc-num">四 · Kobudo</span>
         <h3>Kobudo</h3>
-        <p>Le maniement traditionnel des armes d'Okinawa (bô, nunchaku, sai), enseigné en complément du karaté aux pratiquants confirmés.</p>
+        <p id="disc-card-text-kobudo"></p>
         <span class="disc-more">En savoir plus →</span>
       </div>
       <div class="disc-card" onclick="openDisciplineDetail('Taïso')" role="button" tabindex="0">
         <svg class="disc-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="15" cy="9" r="3"/><path d="M15 12v9M15 21l-6 8M15 17l11-5M15 21l7 7"/></svg>
         <span class="disc-num">五 · Taïso</span>
         <h3>Taïso</h3>
-        <p>Préparation physique et étirements inspirés des arts martiaux japonais : souplesse, respiration et renforcement, pour progresser sereinement dans les autres disciplines.</p>
+        <p id="disc-card-text-taiso"></p>
         <span class="disc-more">En savoir plus →</span>
       </div>
     </div>
@@ -734,11 +717,7 @@ body.admin-mode{padding-bottom:64px;}
     <path d="M100,22 A78,78 0 1,1 58,28" stroke="#c9a45c" stroke-width="10" stroke-linecap="round" opacity="0.14"/>
   </svg>
 </div>
-  <div class="wrap">
-    <span class="page-eyebrow">Planning</span>
-    <h1>Horaires des cours</h1>
-    <p>Les créneaux de la saison 2026-2027, par discipline et par groupe d'âge.</p>
-  </div>
+  <div class="wrap" id="hero-horaires"></div>
 </section>
 <div class="seigaiha-strip"></div>
 
@@ -758,11 +737,7 @@ body.admin-mode{padding-bottom:64px;}
     <path d="M100,22 A78,78 0 1,1 58,28" stroke="#c9a45c" stroke-width="10" stroke-linecap="round" opacity="0.14"/>
   </svg>
 </div>
-  <div class="wrap">
-    <span class="page-eyebrow">Adhésion</span>
-    <h1>Tarifs et inscription</h1>
-    <p>Tarifs de la saison 2026-2027, licence fédérale et adhésion au club incluses. Tarifs dégressifs pour les familles dès la 2ème licence.</p>
-  </div>
+  <div class="wrap" id="hero-tarifs"></div>
 </section>
 <div class="seigaiha-strip"></div>
 
@@ -782,11 +757,7 @@ body.admin-mode{padding-bottom:64px;}
     <path d="M100,22 A78,78 0 1,1 58,28" stroke="#c9a45c" stroke-width="10" stroke-linecap="round" opacity="0.14"/>
   </svg>
 </div>
-  <div class="wrap">
-    <span class="page-eyebrow">Le club</span>
-    <h1>L'équipe enseignante</h1>
-    <p>Des enseignants diplômés, présents dans chaque discipline, épaulés par un comité directeur bénévole.</p>
-  </div>
+  <div class="wrap" id="hero-equipe"></div>
 </section>
 <div class="seigaiha-strip"></div>
 
@@ -804,11 +775,7 @@ body.admin-mode{padding-bottom:64px;}
     <path d="M100,22 A78,78 0 1,1 58,28" stroke="#c9a45c" stroke-width="10" stroke-linecap="round" opacity="0.14"/>
   </svg>
 </div>
-  <div class="wrap">
-    <span class="page-eyebrow">Actualités</span>
-    <h1>La vie du club</h1>
-    <p>Résultats, calendrier et idées pour faire vivre le site au fil de la saison.</p>
-  </div>
+  <div class="wrap" id="hero-vie"></div>
 </section>
 <div class="seigaiha-strip"></div>
 
@@ -827,11 +794,7 @@ body.admin-mode{padding-bottom:64px;}
     <path d="M100,22 A78,78 0 1,1 58,28" stroke="#c9a45c" stroke-width="10" stroke-linecap="round" opacity="0.14"/>
   </svg>
 </div>
-  <div class="wrap">
-    <span class="page-eyebrow">Nous écrire</span>
-    <h1>Nous rejoindre</h1>
-    <p>Un cours d'essai gratuit, sans engagement, pour découvrir le club avant de s'inscrire.</p>
-  </div>
+  <div class="wrap" id="hero-contact"></div>
 </section>
 <div class="seigaiha-strip"></div>
 
@@ -1039,6 +1002,41 @@ var DEFAULT_DATA = {
     facebook:"https://www.facebook.com/groups/dojo.mennecy",
     instagram:"https://www.instagram.com/amam_mennecy/",
     accueil:"Aux horaires de cours, ou sur rendez-vous"
+  },
+  pageTexts: {
+    home: {
+      eyebrow:"Aïkibudo · Judo · Karaté · Kobudo · Taïso",
+      title:"La rigueur du tatami,\nl'esprit d'un club.",
+      text:"L'Académie Menneçoise d'Arts Martiaux forme ses licenciés, enfants comme adultes, dans cinq disciplines traditionnelles — avec un seul état d'esprit : progresser ensemble.",
+      ctaLabel:"Découvrir les disciplines →",
+      statsTitle:"Le club en chiffres",
+      stat1Num:"380+", stat1Label:"licenciés, toutes sections confondues",
+      stat2Num:"5", stat2Label:"disciplines enseignées à Mennecy",
+      stat3Num:"10", stat3Label:"enseignants diplômés",
+      stat4Num:"2", stat4Label:"dojos à Mennecy"
+    },
+    explore: {
+      eyebrow:"Explorer",
+      title:"Tout le club, en un seul site",
+      text:"Disciplines, horaires, tarifs, équipe et vie du club."
+    },
+    disciplinesList: {
+      eyebrow:"Nos enseignements",
+      title:"Cinq disciplines,\nune même exigence",
+      text:"Chaque section est encadrée par des enseignants diplômés, avec une pédagogie adaptée à chaque âge et à chaque niveau.",
+      cards: {
+        "Aïkibudo":"Un art martial de défense fondé sur les déplacements, les clés et les projections. Pas de compétition : la progression se mesure au geste juste.",
+        "Judo":"La voie de la souplesse : chutes, projections et travail au sol, pour les enfants comme pour les adultes. Discipline olympique fondée sur le respect et le contrôle.",
+        "Karaté":"Percussion, kata et self-défense — un travail technique exigeant, du débutant à la ceinture noire, avec ou sans esprit de compétition.",
+        "Kobudo":"Le maniement traditionnel des armes d'Okinawa (bô, nunchaku, sai), enseigné en complément du karaté aux pratiquants confirmés.",
+        "Taïso":"Préparation physique et étirements inspirés des arts martiaux japonais : souplesse, respiration et renforcement, pour progresser sereinement dans les autres disciplines."
+      }
+    },
+    horaires: { eyebrow:"Planning", title:"Horaires des cours", text:"Les créneaux de la saison 2026-2027, par discipline et par groupe d'âge." },
+    tarifs: { eyebrow:"Adhésion", title:"Tarifs et inscription", text:"Tarifs de la saison 2026-2027, licence fédérale et adhésion au club incluses. Tarifs dégressifs pour les familles dès la 2ème licence." },
+    equipe: { eyebrow:"Le club", title:"L'équipe enseignante", text:"Des enseignants diplômés, présents dans chaque discipline, épaulés par un comité directeur bénévole." },
+    vie: { eyebrow:"Actualités", title:"La vie du club", text:"Résultats, calendrier et idées pour faire vivre le site au fil de la saison." },
+    contact: { eyebrow:"Nous écrire", title:"Nous rejoindre", text:"Un cours d'essai gratuit, sans engagement, pour découvrir le club avant de s'inscrire." }
   }
 };
 
@@ -1070,6 +1068,16 @@ async function loadSiteData(){
   }catch(e){ /* pas de contenu enregistré : on garde les valeurs par défaut */ }
   if(!siteData.disciplineDetails){
     siteData.disciplineDetails = deepClone(DEFAULT_DATA.disciplineDetails);
+  }
+  if(!siteData.pageTexts){
+    siteData.pageTexts = deepClone(DEFAULT_DATA.pageTexts);
+  } else {
+    Object.keys(DEFAULT_DATA.pageTexts).forEach(function(k){
+      if(!siteData.pageTexts[k]) siteData.pageTexts[k] = deepClone(DEFAULT_DATA.pageTexts[k]);
+    });
+    if(!siteData.pageTexts.disciplinesList.cards){
+      siteData.pageTexts.disciplinesList.cards = deepClone(DEFAULT_DATA.pageTexts.disciplinesList.cards);
+    }
   }
   renderAll();
 }
@@ -1110,7 +1118,7 @@ function submitAdminLogin(){
     closeAdminLogin();
     document.body.classList.add('admin-mode');
     document.getElementById('admin-toggle-btn').classList.add('is-admin');
-    document.getElementById('admin-toggle-btn').textContent = '\ud83d\udd13 Quitter admin';
+    document.getElementById('admin-toggle-btn').textContent = 'Quitter admin';
     document.getElementById('admin-bar').classList.add('show');
     renderAll();
   } else {
@@ -1121,7 +1129,7 @@ function logoutAdmin(){
   isAdmin = false;
   document.body.classList.remove('admin-mode');
   document.getElementById('admin-toggle-btn').classList.remove('is-admin');
-  document.getElementById('admin-toggle-btn').textContent = '\ud83d\udd12 Admin';
+  document.getElementById('admin-toggle-btn').textContent = 'Admin';
   document.getElementById('admin-bar').classList.remove('show');
   renderAll();
 }
@@ -1140,7 +1148,117 @@ function renderAll(){
   renderVie();
   renderContact();
   renderHomeLatestArticle();
+  renderHomeHeroText();
+  renderHomeHeroStats();
+  renderExploreHead();
+  renderHeroBlock('hero-disciplinesList','pageTexts.disciplinesList');
+  renderHeroBlock('hero-horaires','pageTexts.horaires');
+  renderHeroBlock('hero-tarifs','pageTexts.tarifs');
+  renderHeroBlock('hero-equipe','pageTexts.equipe');
+  renderHeroBlock('hero-vie','pageTexts.vie');
+  renderHeroBlock('hero-contact','pageTexts.contact');
+  renderDisciplineListCards();
   if(currentDisciplineId) renderDisciplineDetail();
+}
+
+function renderHeroBlock(elId, path){
+  var el = document.getElementById(elId);
+  if(!el) return;
+  var t = getPath(siteData, path) || {};
+  if(isAdmin){
+    el.innerHTML =
+      '<div class="adm-text-edit">' +
+      '<input class="adm-input" style="max-width:320px;" data-path="'+path+'.eyebrow" value="'+esc(t.eyebrow||'')+'" oninput="updateField(this)" placeholder="Eyebrow">' +
+      '<textarea class="adm-input" style="min-height:50px;font-weight:700;" data-path="'+path+'.title" oninput="updateField(this)" placeholder="Titre">'+esc(t.title||'')+'</textarea>' +
+      '<textarea class="adm-input" style="min-height:60px;" data-path="'+path+'.text" oninput="updateField(this)" placeholder="Texte">'+esc(t.text||'')+'</textarea>' +
+      '</div>';
+  } else {
+    el.innerHTML =
+      (t.eyebrow ? '<span class="page-eyebrow">'+esc(t.eyebrow)+'</span>' : '') +
+      '<h1>'+esc(t.title||'').replace(/\n/g,'<br>')+'</h1>' +
+      (t.text ? '<p>'+esc(t.text)+'</p>' : '');
+  }
+}
+
+function renderExploreHead(){
+  var el = document.getElementById('home-explore-head');
+  if(!el) return;
+  var t = siteData.pageTexts.explore;
+  if(isAdmin){
+    el.innerHTML =
+      '<div class="adm-text-edit">' +
+      '<input class="adm-input" style="max-width:260px;" data-path="pageTexts.explore.eyebrow" value="'+esc(t.eyebrow)+'" oninput="updateField(this)" placeholder="Eyebrow">' +
+      '<input class="adm-input" style="font-weight:700;" data-path="pageTexts.explore.title" value="'+esc(t.title)+'" oninput="updateField(this)" placeholder="Titre">' +
+      '<textarea class="adm-input" data-path="pageTexts.explore.text" oninput="updateField(this)" placeholder="Texte">'+esc(t.text)+'</textarea>' +
+      '</div>';
+  } else {
+    el.innerHTML =
+      '<span class="sec-eyebrow">'+esc(t.eyebrow)+'</span>' +
+      '<span class="brush-rule"><svg width="90" height="10" viewBox="0 0 90 10"><path d="M2,6 C20,2 30,9 45,5 C60,1 70,8 88,4" stroke="var(--belt-red)" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></span>' +
+      '<h2>'+esc(t.title)+'</h2>' +
+      '<p>'+esc(t.text)+'</p>';
+  }
+}
+
+function renderHomeHeroText(){
+  var el = document.getElementById('home-hero-text');
+  if(!el) return;
+  var t = siteData.pageTexts.home;
+  if(isAdmin){
+    el.innerHTML =
+      '<div class="adm-text-edit">' +
+      '<input class="adm-input" data-path="pageTexts.home.eyebrow" value="'+esc(t.eyebrow)+'" oninput="updateField(this)" placeholder="Eyebrow">' +
+      '<textarea class="adm-input" style="min-height:60px;font-weight:700;" data-path="pageTexts.home.title" oninput="updateField(this)" placeholder="Titre (un saut de ligne possible)">'+esc(t.title)+'</textarea>' +
+      '<textarea class="adm-input" style="min-height:70px;" data-path="pageTexts.home.text" oninput="updateField(this)" placeholder="Texte">'+esc(t.text)+'</textarea>' +
+      '<input class="adm-input" data-path="pageTexts.home.ctaLabel" value="'+esc(t.ctaLabel)+'" oninput="updateField(this)" placeholder="Texte du bouton">' +
+      '</div>';
+  } else {
+    el.innerHTML =
+      '<span class="eyebrow">'+esc(t.eyebrow)+'</span>' +
+      '<h1>'+esc(t.title).replace(/\n/g,'<br>')+'</h1>' +
+      '<p>'+esc(t.text)+'</p>' +
+      '<a href="#disciplines" onclick="showPage(\'disciplines\');return false;" class="hero-link">'+esc(t.ctaLabel)+'</a>';
+  }
+}
+
+function renderHomeHeroStats(){
+  var el = document.getElementById('home-hero-stats');
+  if(!el) return;
+  var t = siteData.pageTexts.home;
+  if(isAdmin){
+    var rows = ['1','2','3','4'].map(function(n){
+      return '<div style="display:flex;gap:6px;margin-bottom:8px;">' +
+        '<input class="adm-input" style="max-width:64px;margin-bottom:0;" data-path="pageTexts.home.stat'+n+'Num" value="'+esc(t['stat'+n+'Num'])+'" oninput="updateField(this)" placeholder="Chiffre">' +
+        '<input class="adm-input" style="margin-bottom:0;" data-path="pageTexts.home.stat'+n+'Label" value="'+esc(t['stat'+n+'Label'])+'" oninput="updateField(this)" placeholder="Libellé">' +
+        '</div>';
+    }).join('');
+    el.innerHTML =
+      '<div class="adm-text-edit">' +
+      '<input class="adm-input" style="font-weight:700;" data-path="pageTexts.home.statsTitle" value="'+esc(t.statsTitle)+'" oninput="updateField(this)" placeholder="Titre de l\'encart">' +
+      rows +
+      '</div>';
+  } else {
+    el.innerHTML =
+      '<div class="disp">'+esc(t.statsTitle)+'</div>' +
+      ['1','2','3','4'].map(function(n){
+        return '<div class="stat-row"><span class="stat-num">'+esc(t['stat'+n+'Num'])+'</span><span class="stat-label">'+esc(t['stat'+n+'Label'])+'</span></div>';
+      }).join('');
+  }
+}
+
+var DISC_CARD_ID_MAP = {"Aïkibudo":"aikibudo","Judo":"judo","Karaté":"karate","Kobudo":"kobudo","Taïso":"taiso"};
+function renderDisciplineListCards(){
+  var cards = (siteData.pageTexts.disciplinesList && siteData.pageTexts.disciplinesList.cards) || {};
+  Object.keys(DISC_CARD_ID_MAP).forEach(function(name){
+    var el = document.getElementById('disc-card-text-'+DISC_CARD_ID_MAP[name]);
+    if(!el) return;
+    var val = cards[name] || '';
+    if(isAdmin){
+      el.innerHTML = '<textarea class="adm-input" style="min-height:70px;font-size:0.86rem;" data-path="pageTexts.disciplinesList.cards.'+name+'" oninput="updateField(this)" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()" placeholder="Description courte">'+esc(val)+'</textarea>';
+    } else {
+      el.textContent = val;
+    }
+  });
 }
 
 function renderHoraires(){
